@@ -5,8 +5,7 @@
 //  Created by hari krishna on 10/09/2025.
 //
 
-
-struct CoreDataCacheMovieDataSource: MovieDataSource {
+struct MovieCoreDataCacheDataSource: MovieDataSource {
     func getMovies() -> [Movie] {
         return []
     }

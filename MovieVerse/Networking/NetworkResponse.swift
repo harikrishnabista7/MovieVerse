@@ -15,3 +15,12 @@ struct NetworkResponse {
     /// Data returned in the response body
     let data: Data?
 }
+
+extension NetworkResponse {
+    func decode<T: Decodable>(type: T.Type) throws -> T {
+        guard (200 ... 299).contains(statusCode), let data else {
+            throw AppError.invalidResponse
+        }
+        return try JSONDecoder().decode(T.self, from: data)
+    }
+}
