@@ -6,7 +6,7 @@
 //
 
 
-struct Movie {
+struct Movie: Decodable {
     let title: String
     let id: Int
 }

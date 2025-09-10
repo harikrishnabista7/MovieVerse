@@ -8,27 +8,51 @@ import Foundation
 
 struct MovieNetworkDataSource: MovieDataSource {
     let client: NetworkClient
+    let requestMaker: NetworkRequestMaker
 
-    func getMovies() -> [Movie] {
-        return []
+    init(client: NetworkClient, requestMaker: NetworkRequestMaker) {
+        self.client = client
+        self.requestMaker = requestMaker
     }
 
-    func searchMovies(query: String) -> [Movie] {
-        return []
+    func getMovies() async throws -> [Movie] {
+        let request = try requestMaker.makeFor(endPoint: MovieDiscoverEndPoint())
+        let response = try await client.perform(request: request)
+        let movies = try response.decode(type: [Movie].self)
+        return movies
     }
 
-    func getMovieDetails(id: Int) -> MovieDetail {
+    func searchMovies(query: String) async throws -> [Movie] {
+        []
+    }
+
+    func getMovieDetails(id: Int) async throws -> MovieDetail {
         .init(title: "", id: 0)
+    }
+}
+
+enum AppError: Error {
+    case decodingError
+    case urlError
+    case invalidResponse
+}
+
+extension NetworkResponse {
+    func decode<T: Decodable>(type: T.Type) throws -> T {
+        guard (200 ... 299).contains(statusCode), let data else {
+            throw AppError.invalidResponse
+        }
+        return try JSONDecoder().decode(T.self, from: data)
     }
 }
 
 struct NetworkRequestMaker {
     let authHeaderProvider: AuthHeaderProvider
-    
-    func make(for endPoint: NetworkEndPoint,
-                     method: NetworkRequest.Method = .get,
-                     headers: [String: String] = [:],
-                     body: Data? = nil) throws -> NetworkRequest {
+
+    func makeFor(endPoint: NetworkEndPoint,
+                 method: NetworkRequest.Method = .get,
+                 headers: [String: String] = [:],
+                 body: Data? = nil) throws -> NetworkRequest {
         let url = try endPoint.makeURL()
         var finalHeaders = headers
         finalHeaders["accept"] = "application/json"
@@ -53,7 +77,6 @@ struct BearerAuthHeaderProvider: AuthHeaderProvider {
     }
 }
 
-
 struct MovieDiscoverEndPoint: NetworkEndPoint {
     private let page: Int
 
@@ -66,7 +89,7 @@ struct MovieDiscoverEndPoint: NetworkEndPoint {
         guard let url = URL(string: path),
               var components = URLComponents(url: url,
                                              resolvingAgainstBaseURL: true) else {
-            throw NSError(domain: "", code: 0, userInfo: nil)
+            throw AppError.urlError
         }
 
         components.queryItems = [
