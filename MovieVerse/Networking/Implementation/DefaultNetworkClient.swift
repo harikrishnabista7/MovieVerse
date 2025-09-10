@@ -8,7 +8,7 @@
 import Foundation
 
 /// Default implementation of NetworkClient
-public struct DefaultNetworkClient: NetworkClient {
+struct DefaultNetworkClient: NetworkClient {
     private let session: URLSession
 
     init(session: URLSession = .shared) {
