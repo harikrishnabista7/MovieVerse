@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Default implementation of NetworkClient
 public struct DefaultNetworkClient: NetworkClient {
     private let session: URLSession
 

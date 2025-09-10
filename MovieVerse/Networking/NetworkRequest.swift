@@ -6,15 +6,36 @@
 //
 import Foundation
 
+/// Model that contains necessary properties for network request
 struct NetworkRequest {
-    let url: URL
+    ///
+    /// Request's URL.
+    ///
+    public let url: URL
 
-    let method: Method
+    ///
+    /// Method that corresponds to httpMethod
+    ///
+    public let method: Method
 
-    let headers: [String: String]
+    ///
+    /// Headers
+    ///
+    public let headers: [String: String]
 
-    let body: Data?
+    ///
+    /// Body data.
+    ///
+    public let body: Data?
 
+    ///
+    /// Create an HTTP request object.
+    ///
+    /// - Parameters:
+    ///   - url: Request's URL.
+    ///   - method: HTTP method.
+    ///   - headers: HTTP headers.
+    ///   - body: Body data.
     init(url: URL,
          method: Method = .get,
          headers: [String: String] = [:],
@@ -27,9 +48,12 @@ struct NetworkRequest {
 }
 
 extension NetworkRequest {
+    /// Enum to represent different NetworkRequest method
     enum Method: String {
+        /// Get method equivalent to httpMethod GET
         case get = "GET"
 
+        /// Post method equivalent to httpMethod POST
         case post = "POST"
     }
 }
