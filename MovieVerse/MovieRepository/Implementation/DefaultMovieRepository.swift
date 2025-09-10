@@ -16,30 +16,81 @@ struct DefaultMovieRepository: MovieRepository {
 
     func getMovies() -> AsyncThrowingStream<[Movie], Error> {
         AsyncThrowingStream { continuation in
-            Task {
-                let cachedMovies = try await cache.getMovies()
-                if !cachedMovies.isEmpty {
-                    continuation.yield(cachedMovies)
-                }
-
-                let networkMovies = try await network.getMovies()
-                continuation.yield(networkMovies)
+            // Create a Task for async work
+            let task = Task {
                 do {
-                    try await cache.saveMovies(networkMovies)
-                } catch {
-                    AppLogger.error(error.localizedDescription)
-                }
+                    // Yield cached movies first
+                    let cachedMovies = try await cache.getMovies()
+                    if !cachedMovies.isEmpty {
+                        continuation.yield(cachedMovies)
+                    }
 
-                continuation.finish()
+                    // Fetch from network
+                    let networkMovies = try await network.getMovies()
+
+                    // Save to cache asynchronously
+
+                    Task {
+                        await saveToCache(networkMovies)
+                    }
+
+                    // Yield network movies
+                    continuation.yield(networkMovies)
+                    continuation.finish()
+                } catch {
+                    continuation.finish(throwing: error)
+                }
+            }
+
+            // Handle stream cancellation
+            continuation.onTermination = { @Sendable _ in
+                task.cancel() // cancel the Task if stream is cancelled
             }
         }
     }
 
     func searchMovies(query: String) async throws -> [Movie] {
-        return []
+        do {
+            let networkMovies = try await network.searchMovies(query: query)
+
+            Task {
+                await saveToCache(networkMovies)
+            }
+
+            return networkMovies
+        } catch {
+            return try await cache.searchMovies(query: query)
+        }
     }
 
     func getMovieDetails(id: Int) async throws -> MovieDetail {
-        .init(title: "", id: 0)
+        do {
+            let details = try await network.getMovieDetails(id: id)
+
+            Task {
+                do {
+                    try await cache.saveMovieDetail(details)
+                } catch {
+                    AppLogger.error(error.localizedDescription)
+                }
+            }
+            return details
+        } catch {
+            return try await cache.getMovieDetails(id: id)
+        }
+    }
+
+    private func saveToCache(_ movies: [Movie]) async {
+        do {
+            try await cache.saveMovies(movies)
+        } catch {
+            AppLogger.error(error.localizedDescription)
+        }
+    }
+
+    private func selectDataSource() -> MovieDataSource {
+        NetworkMonitor.shared.isConnected
+            ? network
+            : cache
     }
 }
