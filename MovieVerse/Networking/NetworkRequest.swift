@@ -14,6 +14,16 @@ struct NetworkRequest {
     let headers: [String: String]
 
     let body: Data?
+
+    init(url: URL,
+         method: Method = .get,
+         headers: [String: String] = [:],
+         body: Data? = nil) {
+        self.url = url
+        self.method = method
+        self.headers = headers
+        self.body = body
+    }
 }
 
 extension NetworkRequest {
