@@ -17,8 +17,19 @@ struct DefaultMovieRepository: MovieRepository {
     func getMovies() -> AsyncThrowingStream<[Movie], Error> {
         AsyncThrowingStream { continuation in
             Task {
-                let movies = try await network.getMovies()
-                continuation.yield(movies)
+                let cachedMovies = try await cache.getMovies()
+                if !cachedMovies.isEmpty {
+                    continuation.yield(cachedMovies)
+                }
+
+                let networkMovies = try await network.getMovies()
+                continuation.yield(networkMovies)
+                do {
+                    try await cache.saveMovies(networkMovies)
+                } catch {
+                    AppLogger.error(error.localizedDescription)
+                }
+
                 continuation.finish()
             }
         }
