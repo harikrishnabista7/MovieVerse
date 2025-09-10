@@ -15,7 +15,7 @@ public struct DefaultNetworkClient: NetworkClient {
         self.session = session
     }
 
-    func peform(request: NetworkRequest) async throws -> NetworkResponse {
+    func perform(request: NetworkRequest) async throws -> NetworkResponse {
         let urlRequest = makeURLRequest(from: request)
         do {
             let (data, response) = try await session.data(for: urlRequest)
