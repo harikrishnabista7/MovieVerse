@@ -20,8 +20,12 @@ struct MovieCoreDataCacheDataSource: MovieCacheDataSource {
         return dMovies.map { $0.toMovie() }
     }
 
+    @MainActor
     func searchMovies(query: String) async throws -> [Movie] {
-        []
+        let fetchRequest = DBMovie.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "title CONTAINS[cd] %@", query)
+        let dMovies = try controller.viewContext.fetch(fetchRequest)
+        return dMovies.map { $0.toMovie() }
     }
 
     func getMovieDetail(id: Int) async throws -> MovieDetail {
