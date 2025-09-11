@@ -13,7 +13,8 @@ final class DefaultMovieRepositoryTests: XCTestCase {
 
     func test_DMR_GetMovies_CacheLoadFirst_ThenNetworkSecond() async {
         let network = MockMovieNetworkDataSource(scenario: .movies(movies))
-        let cache = MockMovieCacheDataSource(scenario: .movies(movies))
+        let cachedMovies: [Movie] = [Movie.mock(id: 2)]
+        let cache = MockMovieCacheDataSource(scenario: .movies(cachedMovies))
 
         let sut = makeSUT(network: network, cache: cache)
 
@@ -24,8 +25,8 @@ final class DefaultMovieRepositoryTests: XCTestCase {
                 emissions.append(batch)
             }
             XCTAssertEqual(emissions.count, 2)
-            XCTAssertEqual(emissions[0], movies) // first emission = cache
-            XCTAssertEqual(emissions[1], movies) // second emission = network
+            XCTAssertEqual(emissions.first, cachedMovies) // first emission = cache
+            XCTAssertEqual(emissions.last, movies) // second emission = network
         } catch {
             XCTFail(error.localizedDescription)
         }
@@ -78,7 +79,7 @@ final class DefaultMovieRepositoryTests: XCTestCase {
                 emissions.append(batch)
             }
             XCTAssertEqual(emissions.count, 1) // receives only network movies
-            XCTAssertEqual(emissions[0], movies)
+            XCTAssertEqual(emissions.first, movies)
         } catch {
             XCTFail(error.localizedDescription)
         }
@@ -96,7 +97,7 @@ final class DefaultMovieRepositoryTests: XCTestCase {
             }
         } catch {
             XCTAssertEqual(emissions.count, 1) // receives only cache movies but network fails
-            XCTAssertEqual(emissions[0], movies)
+            XCTAssertEqual(emissions.first, movies)
             XCTAssertEqual(error as? URLError, URLError(.badServerResponse))
         }
     }
