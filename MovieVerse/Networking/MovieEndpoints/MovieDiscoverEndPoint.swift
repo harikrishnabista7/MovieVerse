@@ -15,17 +15,22 @@ struct MovieDiscoverEndPoint: NetworkEndPoint {
     }
 
     func makeURL() throws -> URL {
-        let path = Constants.baseURLString + "/discover/movie"
+        let path = Config.baseURL + "discover/movie"
         guard let url = URL(string: path),
               var components = URLComponents(url: url,
                                              resolvingAgainstBaseURL: true) else {
             throw AppError.urlError
         }
 
-        components.queryItems = [
+        var queryItems: [URLQueryItem] = [
             URLQueryItem(name: Constants.MovieQueryItem.page.rawValue, value: "\(page)"),
         ]
+
+        if let apiKey = Config.movieAPIKey, !apiKey.isEmpty {
+            queryItems.append(.init(name: Constants.MovieQueryItem.apiKey.rawValue, value: apiKey))
+        }
+
+        components.queryItems = queryItems
         return components.url ?? url
     }
 }
-

@@ -1,0 +1,15 @@
+//
+//  Config.xcconfig
+//  MovieVerse
+//
+//  Created by hari krishna on 11/09/2025.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project
+
+MOVIE_DB_TOKEN = 
+
+BASE_URL = https:/$()/api.themoviedb.org/3/
+
+MOVIE_API_KEY =

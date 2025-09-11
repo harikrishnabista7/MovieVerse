@@ -10,4 +10,5 @@ enum AppError: Error {
     case decodingError
     case urlError
     case invalidResponse
+    case invalidURL
 }
