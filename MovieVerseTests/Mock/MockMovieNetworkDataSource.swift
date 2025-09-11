@@ -1,5 +1,5 @@
 //
-//  MockMovieDataSource.swift
+//  MockMovieNetworkDataSource.swift
 //  MovieVerseTests
 //
 //  Created by hari krishna on 11/09/2025.
@@ -14,11 +14,11 @@ enum MovieMockScenario {
     case detail(MovieDetail)
 }
 
-struct MockMovieDataSource: MovieDataSource {
+struct MockMovieNetworkDataSource: MovieDataSource {
     let scenario: MovieMockScenario
     let delay: UInt64
 
-    init(scenario: MovieMockScenario, delay: UInt64 = 1000000) {
+    init(scenario: MovieMockScenario, delay: UInt64 = 1_000_000_000) {
         self.scenario = scenario
         self.delay = delay
     }
@@ -35,7 +35,7 @@ struct MockMovieDataSource: MovieDataSource {
         return try handleMoviesScenario()
     }
 
-    func getMovieDetails(id: Int) async throws -> MovieDetail {
+    func getMovieDetail(id: Int) async throws -> MovieDetail {
         try await Task.sleep(nanoseconds: delay)
 
         if case let .detail(detail) = scenario {

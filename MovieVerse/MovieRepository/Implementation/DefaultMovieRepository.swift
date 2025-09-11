@@ -18,24 +18,26 @@ struct DefaultMovieRepository: MovieRepository {
         AsyncThrowingStream { continuation in
             // Create a Task for async work
             let task = Task {
+                // Yield cached movies first
                 do {
-                    // Yield cached movies first
-                    let cachedMovies = try await cache.getMovies()
+                    let cachedMovies = try await self.cache.getMovies()
                     if !cachedMovies.isEmpty {
                         continuation.yield(cachedMovies)
                     }
+                } catch {
+                    AppLogger.error(error.localizedDescription)
+                }
 
+                do {
                     // Fetch from network
                     let networkMovies = try await network.getMovies()
 
-                    // Save to cache asynchronously
-
-                    Task {
-                        await saveToCache(networkMovies)
-                    }
-
                     // Yield network movies
                     continuation.yield(networkMovies)
+
+                    // Save to cache
+                    await saveToCache(networkMovies)
+
                     continuation.finish()
                 } catch {
                     continuation.finish(throwing: error)
@@ -63,9 +65,9 @@ struct DefaultMovieRepository: MovieRepository {
         }
     }
 
-    func getMovieDetails(id: Int) async throws -> MovieDetail {
+    func getMovieDetail(id: Int) async throws -> MovieDetail {
         do {
-            let details = try await network.getMovieDetails(id: id)
+            let details = try await network.getMovieDetail(id: id)
 
             Task {
                 do {
@@ -76,7 +78,7 @@ struct DefaultMovieRepository: MovieRepository {
             }
             return details
         } catch {
-            return try await cache.getMovieDetails(id: id)
+            return try await cache.getMovieDetail(id: id)
         }
     }
 

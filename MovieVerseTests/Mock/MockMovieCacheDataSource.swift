@@ -1,5 +1,5 @@
 //
-//  MockCacheDataSource.swift
+//  MockMovieCacheDataSource.swift
 //  MovieVerse
 //
 //  Created by hari krishna on 11/09/2025.
@@ -7,7 +7,7 @@
 import Foundation
 @testable import MovieVerse
 
-final class MockCacheDataSource: MovieCacheDataSource {
+final class MockMovieCacheDataSource: MovieCacheDataSource {
     let scenario: MovieMockScenario
     let delay: UInt64
 
@@ -32,7 +32,7 @@ final class MockCacheDataSource: MovieCacheDataSource {
         return try handleMoviesScenario()
     }
 
-    func getMovieDetails(id: Int) async throws -> MovieDetail {
+    func getMovieDetail(id: Int) async throws -> MovieDetail {
         try await Task.sleep(nanoseconds: delay)
 
         if case let .detail(detail) = scenario {

@@ -26,7 +26,7 @@ struct MovieNetworkDataSource: MovieDataSource {
         []
     }
 
-    func getMovieDetails(id: Int) async throws -> MovieDetail {
+    func getMovieDetail(id: Int) async throws -> MovieDetail {
         .init(title: "", id: 0)
     }
 }

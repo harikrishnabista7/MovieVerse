@@ -27,7 +27,7 @@ import Foundation
  } */
 
 /// A model that represents a movie fetched from the TMDB API.
-struct Movie: Decodable {
+struct Movie: Decodable, Equatable {
     /// The title of the movie.
     ///
     /// Example: `"War of the Worlds"`

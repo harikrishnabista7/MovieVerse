@@ -33,5 +33,5 @@ protocol MovieDataSource {
     /// - Parameter id: The unique identifier of the movie (as provided by the data source).
     /// - Returns: A `MovieDetail` object containing extended movie information.
     /// - Throws: An error if the movie details could not be retrieved.
-    func getMovieDetails(id: Int) async throws -> MovieDetail
+    func getMovieDetail(id: Int) async throws -> MovieDetail
 }

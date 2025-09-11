@@ -14,7 +14,7 @@ struct MovieCoreDataCacheDataSource: MovieDataSource {
         return []
     }
 
-    func getMovieDetails(id: Int) -> MovieDetail {
+    func getMovieDetail(id: Int) -> MovieDetail {
         .init(title: "", id: 0)
     }
 }
