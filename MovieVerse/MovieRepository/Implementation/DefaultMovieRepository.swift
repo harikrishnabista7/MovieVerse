@@ -55,9 +55,7 @@ struct DefaultMovieRepository: MovieRepository {
         do {
             let networkMovies = try await network.searchMovies(query: query)
 
-            Task {
-                await saveToCache(networkMovies)
-            }
+            await saveToCache(networkMovies)
 
             return networkMovies
         } catch {
@@ -69,13 +67,12 @@ struct DefaultMovieRepository: MovieRepository {
         do {
             let details = try await network.getMovieDetail(id: id)
 
-            Task {
-                do {
-                    try await cache.saveMovieDetail(details)
-                } catch {
-                    AppLogger.error(error.localizedDescription)
-                }
+            do {
+                try await cache.saveMovieDetail(details)
+            } catch {
+                AppLogger.error(error.localizedDescription)
             }
+
             return details
         } catch {
             return try await cache.getMovieDetail(id: id)

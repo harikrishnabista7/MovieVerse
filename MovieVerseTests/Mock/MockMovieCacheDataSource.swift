@@ -9,32 +9,24 @@ import Foundation
 
 final class MockMovieCacheDataSource: MovieCacheDataSource {
     let scenario: MovieMockScenario
-    let delay: UInt64
 
     private(set) var isCacheCalled = false
     private(set) var savedMovies: [Movie] = []
     private(set) var savedDetail: MovieDetail?
 
-    init(scenario: MovieMockScenario, delay: UInt64 = 1000000) {
+    init(scenario: MovieMockScenario) {
         self.scenario = scenario
-        self.delay = delay
     }
 
     func getMovies() async throws -> [Movie] {
-        try await Task.sleep(nanoseconds: delay)
-
         return try handleMoviesScenario()
     }
 
     func searchMovies(query: String) async throws -> [Movie] {
-        try await Task.sleep(nanoseconds: delay)
-
         return try handleMoviesScenario()
     }
 
     func getMovieDetail(id: Int) async throws -> MovieDetail {
-        try await Task.sleep(nanoseconds: delay)
-
         if case let .detail(detail) = scenario {
             return detail
         }

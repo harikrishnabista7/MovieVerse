@@ -12,8 +12,8 @@ final class DefaultMovieRepositoryTests: XCTestCase {
     // MARK: - Get Movies
 
     func test_DMR_GetMovies_CacheLoadFirst_ThenNetworkSecond() async {
-        let network = networkDataSource(scenario: .movies(networkMovies))
-        let cache = cacheDataSource(scenario: .movies(cachedMovies))
+        let network = MockMovieNetworkDataSource(scenario: .movies(movies))
+        let cache = MockMovieCacheDataSource(scenario: .movies(movies))
 
         let sut = makeSUT(network: network, cache: cache)
 
@@ -24,61 +24,199 @@ final class DefaultMovieRepositoryTests: XCTestCase {
                 emissions.append(batch)
             }
             XCTAssertEqual(emissions.count, 2)
-            XCTAssertEqual(emissions[0], cachedMovies) // first emission = cache
-            XCTAssertEqual(emissions[1], networkMovies) // second emission = network
+            XCTAssertEqual(emissions[0], movies) // first emission = cache
+            XCTAssertEqual(emissions[1], movies) // second emission = network
         } catch {
             XCTFail(error.localizedDescription)
         }
     }
 
-    func test_DMR_GetMovies_WhenNetworkSuccess_CacheCalled() {
-        
+    func test_DMR_GetMovies_WhenNetworkSuccess_Cached() async {
+        let network = MockMovieNetworkDataSource(scenario: .movies(movies))
+        let cache = MockMovieCacheDataSource(scenario: .movies(movies))
+
+        let sut = makeSUT(network: network, cache: cache)
+
+        do {
+            for try await _ in sut.getMovies() {}
+
+            XCTAssertTrue(cache.isCacheCalled)
+            XCTAssertEqual(cache.savedMovies, movies)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
     }
 
-    func test_DMR_GetMovies_ThrowsError() {
+    func test_DMR_GetMovies_ThrowsError() async {
+        let network = MockMovieNetworkDataSource(scenario: errorScenario)
+        let cache = MockMovieCacheDataSource(scenario: errorScenario)
+
+        let sut = makeSUT(network: network, cache: cache)
+
+        do {
+            var emissions: [[Movie]] = []
+
+            for try await batch in sut.getMovies() {
+                emissions.append(batch)
+            }
+            XCTFail("Unexpected behavior, no error thrown")
+        } catch let error {
+            XCTAssertEqual(error as? URLError, URLError(.badServerResponse))
+        }
     }
 
-    func test_DMR_GetMovies_WhenCacheLoadFails_LoadFromNetworkSucceeds() {
+    func test_DMR_GetMovies_WhenCacheLoadFails_LoadFromNetworkSucceeds() async {
+        let network = MockMovieNetworkDataSource(scenario: .movies(movies))
+        let cache = MockMovieCacheDataSource(scenario: errorScenario)
+
+        let sut = makeSUT(network: network, cache: cache)
+
+        do {
+            var emissions: [[Movie]] = []
+
+            for try await batch in sut.getMovies() {
+                emissions.append(batch)
+            }
+            XCTAssertEqual(emissions.count, 1) // receives only network movies
+            XCTAssertEqual(emissions[0], movies)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
     }
 
-    func test_DMR_GetMovies_WhenCacheLoadsSuccess_LoadFromNetworkThrowsError() {
+    func test_DMR_GetMovies_WhenCacheLoadsSuccess_LoadFromNetworkThrowsError() async {
+        let network = MockMovieNetworkDataSource(scenario: errorScenario)
+        let cache = MockMovieCacheDataSource(scenario: .movies(movies))
+
+        let sut = makeSUT(network: network, cache: cache)
+        var emissions: [[Movie]] = []
+        do {
+            for try await batch in sut.getMovies() {
+                emissions.append(batch)
+            }
+        } catch {
+            XCTAssertEqual(emissions.count, 1) // receives only cache movies but network fails
+            XCTAssertEqual(emissions[0], movies)
+            XCTAssertEqual(error as? URLError, URLError(.badServerResponse))
+        }
     }
 
     // MARK: - Search Movies
 
-    func test_DMR_SearchMovies_LoadSucceeds() {
+    func test_DMR_SearchMovies_LoadSucceeds() async {
+        let network = MockMovieNetworkDataSource(scenario: .movies(movies))
+        let cache = MockMovieCacheDataSource(scenario: errorScenario)
+
+        let sut = makeSUT(network: network, cache: cache)
+        do {
+            let searchedMovies = try await sut.searchMovies(query: "")
+            XCTAssertEqual(searchedMovies, movies)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
     }
 
-    func test_DMR_SearchMovies_WhenSuccess_CacheCalled() {
+    func test_DMR_SearchMovies_WhenNetworkSucceeds_Cached() async {
+        let network = MockMovieNetworkDataSource(scenario: .movies(movies)) // Loads from network
+        let cache = MockMovieCacheDataSource(scenario: errorScenario)
+
+        let sut = makeSUT(network: network, cache: cache)
+
+        do {
+            let _ = try await sut.searchMovies(query: "")
+            XCTAssertTrue(cache.isCacheCalled)
+            XCTAssertEqual(cache.savedMovies, movies)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
     }
 
-    func test_DMR_SearchMovies_WhenNetworkLoadFails_LoadFromCacheSucceeds() {
+    func test_DMR_SearchMovies_WhenNetworkLoadFails_LoadFromCacheSucceeds() async {
+        let network = MockMovieNetworkDataSource(scenario: errorScenario)
+        let cache = MockMovieCacheDataSource(scenario: .movies(movies)) // Loads from cache
+
+        let sut = makeSUT(network: network, cache: cache)
+
+        do {
+            let searchedMovies = try await sut.searchMovies(query: "")
+            XCTAssertEqual(searchedMovies, movies)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
     }
 
-    func test_DMR_SearchMovies_WhenNetworkLoadFails_LoadFromCacheThrowsError() {
+    func test_DMR_SearchMovies_WhenNetworkLoadFails_LoadFromCacheAlsoFails() async {
+        let network = MockMovieNetworkDataSource(scenario: errorScenario)
+        let cache = MockMovieCacheDataSource(scenario: errorScenario)
+
+        let sut = makeSUT(network: network, cache: cache)
+
+        do {
+            let _ = try await sut.searchMovies(query: "")
+            XCTFail("Unexpected behavior, no error thrown")
+        } catch let error {
+            XCTAssertEqual(error as? URLError, URLError(.badServerResponse))
+        }
     }
 
     // MARK: - Get Movie Detail
 
-    func test_DMR_GetMovieDetail_LoadSucceeds() {
+    func test_DMR_GetMovieDetail_LoadSucceeds() async {
+        let network = MockMovieNetworkDataSource(scenario: .detail(detailMovie)) // Loads from network
+        let cache = MockMovieCacheDataSource(scenario: errorScenario)
+
+        let sut = makeSUT(network: network, cache: cache)
+        do {
+            let detail = try await sut.getMovieDetail(id: detailMovie.id)
+            XCTAssertEqual(detail, detailMovie)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
     }
 
-    func test_DMR_GetMovieDetail_WhenSuccess_CacheCalled() {
+    func test_DMR_GetMovieDetail_WhenNetworkSucceeds_Cached() async {
+        let network = MockMovieNetworkDataSource(scenario: .detail(detailMovie)) // Loads from network
+        let cache = MockMovieCacheDataSource(scenario: errorScenario)
+
+        let sut = makeSUT(network: network, cache: cache)
+        do {
+            let _ = try await sut.getMovieDetail(id: detailMovie.id)
+            XCTAssertTrue(cache.isCacheCalled)
+            XCTAssertEqual(cache.savedDetail, detailMovie)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
     }
 
-    func test_DMR_GetMovieDwetail_WhenNetworkFails_LoadFromCacheSucceeds() {
+    func test_DMR_GetMovieDwetail_WhenNetworkFails_LoadFromCacheSucceeds() async {
+        let network = MockMovieNetworkDataSource(scenario: errorScenario)
+        let cache = MockMovieCacheDataSource(scenario: .detail(detailMovie)) // Loads from cache
+
+        let sut = makeSUT(network: network, cache: cache)
+        do {
+            let detail = try await sut.getMovieDetail(id: detailMovie.id)
+            XCTAssertEqual(detail, detailMovie)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
     }
 
-    func test_DMR_GetMovieDwetail_WhenNetworkFails_LoadFromCacheThrowsError() {
+    func test_DMR_GetMovieDwetail_WhenNetworkFails_LoadFromCacheThrowsError() async {
+        let network = MockMovieNetworkDataSource(scenario: errorScenario)
+        let cache = MockMovieCacheDataSource(scenario: errorScenario)
+
+        let sut = makeSUT(network: network, cache: cache)
+        do {
+            let _ = try await sut.getMovieDetail(id: detailMovie.id)
+            XCTFail("Unexpected behavior, no error thrown")
+        } catch let error {
+            XCTAssert(error is MockError)
+        }
     }
 
     // MARK: - Helper
 
-    private var cachedMovies: [Movie] {
-        return [Movie.mock(id: 2)]
-    }
-
-    private var networkMovies: [Movie] {
+    private var movies: [Movie] {
         return [Movie.mock(id: 1)]
     }
 
@@ -93,13 +231,5 @@ final class DefaultMovieRepositoryTests: XCTestCase {
     private func makeSUT(network: MovieDataSource,
                          cache: MovieCacheDataSource) -> DefaultMovieRepository {
         return DefaultMovieRepository(network: network, cache: cache)
-    }
-
-    private func networkDataSource(scenario: MovieMockScenario) -> MovieDataSource {
-        return MockMovieNetworkDataSource(scenario: scenario)
-    }
-
-    private func cacheDataSource(scenario: MovieMockScenario) -> MovieCacheDataSource {
-        return MockMovieCacheDataSource(scenario: scenario)
     }
 }
