@@ -12,15 +12,16 @@ struct MovieRowView: View {
 
     var body: some View {
         HStack(alignment: .center, spacing: 15) {
-            AsyncImage(url: movie.absoluteImageURL(path: movie.posterPath)) { image in
-                image.resizable().scaledToFill()
-            } placeholder: {
+            AsyncImageView(url: movie.absoluteImageURL(path: movie.posterPath), contentMode: .fill, loadingView: {
                 Color.gray.opacity(0.2)
-            }.frame(width: 60, height: 60)
+            }, placeholderView: {
+                Color.gray.opacity(0.2)
+            }, imageLoader: URLSessionImageLoader())
+                .frame(width: 60, height: 60)
                 .clipped()
                 .cornerRadius(8)
 
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 4) {
                 Text(movie.title)
                     .padding(.top, 8)
                     .bold()
