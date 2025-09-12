@@ -9,9 +9,11 @@ import SwiftUI
 
 @main
 struct MovieVerseApp: App {
+    @State private var appCoordinator: AppCoordinator = .init()
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            CoordinatedRootView(root: AppCoordinator.Route.movieList, coordinator: appCoordinator)
         }
     }
 }
