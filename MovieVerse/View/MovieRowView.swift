@@ -17,7 +17,7 @@ struct MovieRowView: View {
             }, placeholderView: {
                 Color.gray.opacity(0.2)
             }, imageLoader: KingfisherImageLoader())
-                .frame(width: 60, height: 60)
+                .frame(width: 70, height: 70)
                 .clipped()
                 .cornerRadius(8)
 
@@ -25,6 +25,7 @@ struct MovieRowView: View {
                 Text(movie.title)
                     .padding(.top, 8)
                     .bold()
+                    .lineLimit(2)
 
                 HStack {
                     Image(systemName: "calendar")
