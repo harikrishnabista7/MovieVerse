@@ -17,10 +17,17 @@ struct NetworkResponse {
 }
 
 extension NetworkResponse {
-    func decode<T: Decodable>(type: T.Type) throws -> T {
-        guard (200 ... 299).contains(statusCode), let data else {
+    func decode<T: Decodable>(type: T.Type, dictionaryKey: String? = nil) throws -> T {
+        guard (200 ... 299).contains(statusCode), var data else {
             throw AppError.invalidResponse
         }
+
+        if let dictionaryKey = dictionaryKey {
+            let jsonObject = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+            let actualDictionary = jsonObject?[dictionaryKey]
+            data = try JSONSerialization.data(withJSONObject: actualDictionary ?? [:], options: [])
+        }
+
         return try JSONDecoder().decode(T.self, from: data)
     }
 }

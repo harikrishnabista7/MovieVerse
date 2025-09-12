@@ -18,7 +18,7 @@ struct MovieNetworkDataSource: MovieDataSource {
     func getMovies() async throws -> [Movie] {
         let request = try requestMaker.makeFor(endPoint: MovieDiscoverEndPoint())
         let response = try await client.perform(request: request)
-        let movies = try response.decode(type: [Movie].self)
+        let movies = try response.decode(type: [Movie].self, dictionaryKey: "results")
         return movies
     }
 

@@ -4,7 +4,7 @@
         <attribute name="id" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="overview" attributeType="String"/>
         <attribute name="posterPath" attributeType="String"/>
-        <attribute name="releaseData" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="releaseData" attributeType="String"/>
         <attribute name="title" attributeType="String"/>
     </entity>
     <entity name="TestObject" representedClassName=".TestObject" syncable="YES" codeGenerationType="class">

@@ -41,7 +41,7 @@ struct Movie: Decodable, Equatable {
     /// The official release date of the movie.
     ///
     /// Example: `"2025-07-29"`
-    let releaseDate: Date
+    let releaseDate: String
 
     /// A partial URL path to the movie poster image.
     ///
@@ -54,4 +54,12 @@ struct Movie: Decodable, Equatable {
     /// Example:
     /// `"Will Radford is a top analyst for Homeland Security who tracks potential threats ..."`
     let overview: String
+    
+    enum CodingKeys: String, CodingKey {
+        case title
+        case id
+        case releaseDate = "release_date"
+        case posterPath = "poster_path"
+        case overview
+    }
 }

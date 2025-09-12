@@ -62,7 +62,7 @@ extension DBMovie {
     func toMovie() -> Movie {
         .init(title: title ?? "",
               id: Int(id),
-              releaseDate: releaseData ?? .distantPast,
+              releaseDate: releaseData ?? "",
               posterPath: posterPath ?? "",
               overview: overview ?? "")
     }
