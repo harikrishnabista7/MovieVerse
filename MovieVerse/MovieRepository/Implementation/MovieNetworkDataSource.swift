@@ -23,7 +23,10 @@ struct MovieNetworkDataSource: MovieDataSource {
     }
 
     func searchMovies(query: String) async throws -> [Movie] {
-        throw AppError.urlError
+        let request = try requestMaker.makeFor(endPoint: MovieSearchEndPoint(query: query))
+        let response = try await client.perform(request: request)
+        let movies = try response.decode(type: [Movie].self, dictionaryKey: "results")
+        return movies
     }
 
     func getMovieDetail(id: Int) async throws -> MovieDetail {

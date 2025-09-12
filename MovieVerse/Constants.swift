@@ -9,5 +9,6 @@ struct Constants {
     enum MovieQueryItem: String {
         case page
         case apiKey = "api_key"
+        case query
     }
 }
