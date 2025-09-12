@@ -25,6 +25,7 @@ struct MovieListView: View {
             }
         }
         .searchable(text: $viewModel.searchText)
+        .navigationTitle(Text("MovieVerse"))
         .task {
            await viewModel.loadMovies()
         }
