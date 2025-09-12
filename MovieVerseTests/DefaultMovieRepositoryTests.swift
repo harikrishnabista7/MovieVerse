@@ -11,7 +11,7 @@ import XCTest
 final class DefaultMovieRepositoryTests: XCTestCase {
     // MARK: - Get Movies
 
-    func test_DMR_GetMovies_CacheLoadFirst_ThenNetworkSecond() async {
+    func test_DMR_GetMovies_ShouldReturnMovies_FromCacheFirst_ThenFromNetworkSecond() async {
         let network = MockMovieNetworkDataSource(scenario: .movies(movies))
         let cachedMovies: [Movie] = [Movie.mock(id: 2)]
         let cache = MockMovieCacheDataSource(scenario: .movies(cachedMovies))
@@ -32,7 +32,7 @@ final class DefaultMovieRepositoryTests: XCTestCase {
         }
     }
 
-    func test_DMR_GetMovies_WhenNetworkSuccess_Cached() async {
+    func test_DMR_GetMovies_ShouldCacheMovies() async {
         let network = MockMovieNetworkDataSource(scenario: .movies(movies))
         let cache = MockMovieCacheDataSource(scenario: .movies(movies))
 
@@ -66,7 +66,7 @@ final class DefaultMovieRepositoryTests: XCTestCase {
         }
     }
 
-    func test_DMR_GetMovies_WhenCacheLoadFails_LoadFromNetworkSucceeds() async {
+    func test_DMR_GetMovies_WhenCacheLoadFails_ShouldReturnMoviesFromNetwork() async {
         let network = MockMovieNetworkDataSource(scenario: .movies(movies))
         let cache = MockMovieCacheDataSource(scenario: errorScenario)
 
@@ -85,7 +85,7 @@ final class DefaultMovieRepositoryTests: XCTestCase {
         }
     }
 
-    func test_DMR_GetMovies_WhenCacheLoadsSuccess_LoadFromNetworkThrowsError() async {
+    func test_DMR_GetMovies_ShouldReturnMoviesFromCache_ThenThrowErrorForNetworkLoad() async {
         let network = MockMovieNetworkDataSource(scenario: errorScenario)
         let cache = MockMovieCacheDataSource(scenario: .movies(movies))
 
@@ -104,7 +104,7 @@ final class DefaultMovieRepositoryTests: XCTestCase {
 
     // MARK: - Search Movies
 
-    func test_DMR_SearchMovies_LoadSucceeds() async {
+    func test_DMR_SearchMovies_ShouldReturnMovies() async {
         let network = MockMovieNetworkDataSource(scenario: .movies(movies))
         let cache = MockMovieCacheDataSource(scenario: errorScenario)
 
@@ -117,7 +117,7 @@ final class DefaultMovieRepositoryTests: XCTestCase {
         }
     }
 
-    func test_DMR_SearchMovies_WhenNetworkSucceeds_Cached() async {
+    func test_DMR_SearchMovies_ShouldCacheMovies() async {
         let network = MockMovieNetworkDataSource(scenario: .movies(movies)) // Loads from network
         let cache = MockMovieCacheDataSource(scenario: errorScenario)
 
@@ -132,7 +132,7 @@ final class DefaultMovieRepositoryTests: XCTestCase {
         }
     }
 
-    func test_DMR_SearchMovies_WhenNetworkLoadFails_LoadFromCacheSucceeds() async {
+    func test_DMR_SearchMovies_WhenNetworkLoadFails_ShouldReturnMoviesFromCache() async {
         let network = MockMovieNetworkDataSource(scenario: errorScenario)
         let cache = MockMovieCacheDataSource(scenario: .movies(movies)) // Loads from cache
 
@@ -146,7 +146,7 @@ final class DefaultMovieRepositoryTests: XCTestCase {
         }
     }
 
-    func test_DMR_SearchMovies_WhenNetworkLoadFails_LoadFromCacheAlsoFails() async {
+    func test_DMR_SearchMovies_ShouldThrowError() async {
         let network = MockMovieNetworkDataSource(scenario: errorScenario)
         let cache = MockMovieCacheDataSource(scenario: errorScenario)
 
@@ -162,7 +162,7 @@ final class DefaultMovieRepositoryTests: XCTestCase {
 
     // MARK: - Get Movie Detail
 
-    func test_DMR_GetMovieDetail_LoadSucceeds() async {
+    func test_DMR_GetMovieDetail_ShouldReturnMovieDetail() async {
         let network = MockMovieNetworkDataSource(scenario: .detail(detailMovie)) // Loads from network
         let cache = MockMovieCacheDataSource(scenario: errorScenario)
 
@@ -175,7 +175,7 @@ final class DefaultMovieRepositoryTests: XCTestCase {
         }
     }
 
-    func test_DMR_GetMovieDetail_WhenNetworkSucceeds_Cached() async {
+    func test_DMR_GetMovieDetail_ShouldCacheMovieDetail() async {
         let network = MockMovieNetworkDataSource(scenario: .detail(detailMovie)) // Loads from network
         let cache = MockMovieCacheDataSource(scenario: errorScenario)
 
@@ -189,7 +189,7 @@ final class DefaultMovieRepositoryTests: XCTestCase {
         }
     }
 
-    func test_DMR_GetMovieDwetail_WhenNetworkFails_LoadFromCacheSucceeds() async {
+    func test_DMR_GetMovieDwetail_WhenNetworkFails_ShouldReturnMovieDetailFromCache() async {
         let network = MockMovieNetworkDataSource(scenario: errorScenario)
         let cache = MockMovieCacheDataSource(scenario: .detail(detailMovie)) // Loads from cache
 
@@ -202,7 +202,7 @@ final class DefaultMovieRepositoryTests: XCTestCase {
         }
     }
 
-    func test_DMR_GetMovieDwetail_WhenNetworkFails_LoadFromCacheThrowsError() async {
+    func test_DMR_GetMovieDwetail_ShouldThrowError() async {
         let network = MockMovieNetworkDataSource(scenario: errorScenario)
         let cache = MockMovieCacheDataSource(scenario: errorScenario)
 

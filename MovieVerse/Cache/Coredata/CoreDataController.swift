@@ -19,6 +19,7 @@ struct CoreDataController {
 
         if inMemory {
             let description = NSPersistentStoreDescription()
+            description.type = NSInMemoryStoreType
             description.url = URL(fileURLWithPath: "/dev/null")
             container.persistentStoreDescriptions = [description]
         }
