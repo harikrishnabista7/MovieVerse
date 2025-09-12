@@ -16,7 +16,7 @@ struct MovieRowView: View {
                 Color.gray.opacity(0.2)
             }, placeholderView: {
                 Color.gray.opacity(0.2)
-            }, imageLoader: URLSessionImageLoader())
+            }, imageLoader: KingfisherImageLoader())
                 .frame(width: 60, height: 60)
                 .clipped()
                 .cornerRadius(8)

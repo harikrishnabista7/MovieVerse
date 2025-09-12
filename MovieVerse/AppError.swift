@@ -11,4 +11,5 @@ enum AppError: Error {
     case urlError
     case invalidResponse
     case invalidURL
+    case imageLoadingError
 }
