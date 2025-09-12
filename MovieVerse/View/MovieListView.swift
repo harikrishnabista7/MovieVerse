@@ -9,8 +9,7 @@ import SwiftUI
 
 struct MovieListView: View {
     @StateObject private var viewModel: MovieListViewModel
-    @State private var searchText: String = ""
-
+   
     init(repo: MovieRepository) {
         _viewModel = StateObject(wrappedValue: MovieListViewModel(repo: repo))
     }
@@ -25,7 +24,7 @@ struct MovieListView: View {
                 }
             }
         }
-        .searchable(text: $searchText)
+        .searchable(text: $viewModel.searchText)
         .task {
            await viewModel.loadMovies()
         }

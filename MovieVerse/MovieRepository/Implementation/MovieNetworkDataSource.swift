@@ -23,7 +23,7 @@ struct MovieNetworkDataSource: MovieDataSource {
     }
 
     func searchMovies(query: String) async throws -> [Movie] {
-        []
+        throw AppError.urlError
     }
 
     func getMovieDetail(id: Int) async throws -> MovieDetail {

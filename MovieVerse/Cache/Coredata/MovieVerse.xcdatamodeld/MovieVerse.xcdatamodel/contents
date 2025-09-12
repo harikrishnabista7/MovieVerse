@@ -5,5 +5,10 @@
         <attribute name="posterPath" attributeType="String"/>
         <attribute name="releaseData" attributeType="String"/>
         <attribute name="title" attributeType="String"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="id"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
     </entity>
 </model>
