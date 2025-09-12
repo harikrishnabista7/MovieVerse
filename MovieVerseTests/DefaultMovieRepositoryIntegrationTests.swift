@@ -11,7 +11,7 @@ import XCTest
 final class DefaultMovieRepositoryIntegrationTests: XCTestCase {
     @MainActor
     func test_DMR_GetMovies_ShouldReturnMovies() async {
-        let network = MovieNetworkDataSource(client: DefaultNetworkClient(), requestMaker: NetworkRequestMaker(authHeaderProvider: BearerAuthHeaderProvider(token: "")))
+        let network = MovieNetworkDataSource(client: DefaultNetworkClient(), requestMaker: NetworkRequestMaker(authHeaderProvider: BearerAuthHeaderProvider(token: Config.movieAccessToken ?? "")))
         let cache = MovieCoreDataCacheDataSource(controller: .preview)
 
         let repository = DefaultMovieRepository(network: network, cache: cache)

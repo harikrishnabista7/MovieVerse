@@ -21,15 +21,25 @@ final class AppCoordinator: Coordinator {
 
     typealias Route = AppCoordinatorRoute
 
+    private let repo: MovieRepository
+
     init() {
         path = .init()
+
+        let network = MovieNetworkDataSource(
+            client: DefaultNetworkClient(),
+            requestMaker: NetworkRequestMaker(authHeaderProvider: BearerAuthHeaderProvider(token: Config.movieAccessToken ?? "")))
+
+        let cache = MovieCoreDataCacheDataSource(controller: .shared)
+
+        repo = DefaultMovieRepository(network: network, cache: cache)
     }
 
     @ViewBuilder
     func viewFor(_ route: Route) -> some View {
         switch route {
         case .movieList:
-            Text("Movie List")
+            MovieListView(repo: repo)
         case .movieDetail:
             Text("Detail")
         }
