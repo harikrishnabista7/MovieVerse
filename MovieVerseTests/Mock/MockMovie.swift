@@ -10,6 +10,6 @@ import Foundation
 
 extension Movie {
     static func mock(id: Int, title: String = "Interstellar") -> Movie {
-        return Movie(title: title, id: id, releaseDate: "", posterPath: "", overview: "")
+        return Movie(title: title, id: id, releaseDate: "", posterPath: "")
     }
 }
