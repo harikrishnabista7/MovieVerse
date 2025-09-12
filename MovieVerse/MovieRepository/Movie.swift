@@ -27,7 +27,7 @@ import Foundation
  } */
 
 /// A model that represents a movie fetched from the TMDB API.
-struct Movie: Decodable, Equatable {
+struct Movie: Decodable, Equatable, Identifiable {
     /// The title of the movie.
     ///
     /// Example: `"War of the Worlds"`
@@ -49,17 +49,21 @@ struct Movie: Decodable, Equatable {
     /// Example: `"/yvirUYrva23IudARHn3mMGVxWqM.jpg"`
     let posterPath: String
 
-    /// A brief description or synopsis of the movie.
-    ///
-    /// Example:
-    /// `"Will Radford is a top analyst for Homeland Security who tracks potential threats ..."`
-    let overview: String
-    
     enum CodingKeys: String, CodingKey {
         case title
         case id
         case releaseDate = "release_date"
         case posterPath = "poster_path"
-        case overview
+    }
+}
+
+extension Movie {
+    func absoluteImageURL(width: Int = 200, path: String) -> URL? {
+        URL(string: "https://image.tmdb.org/t/p/w\(width)\(path)")
+    }
+
+    var releaseYearStr: String {
+        let year = releaseDate.split(separator: "-").first ?? ""
+        return String(year)
     }
 }
