@@ -39,7 +39,7 @@ struct MovieDetailView: View {
                 // backdroop
                 imageView(url: MovieHelper.absoluteImageURL(size: .w500, path: movieDetail.backdropPath),
                           contentMode: .fill,
-                          placeholderHeight: 200)
+                          placeholderHeight: 250)
                     .frame(maxHeight: 300)
                     .clipped()
                     .overlay(alignment: .bottomTrailing) {
@@ -100,7 +100,9 @@ struct MovieDetailView: View {
     @ViewBuilder
     private func imageView(url: URL?, contentMode: ContentMode, placeholderHeight: CGFloat) -> some View {
         AsyncImageView(url: url, contentMode: contentMode, loadingView: {
-            Color.gray.padding(0.2).frame(height: placeholderHeight)
+            Color.gray.padding(0.2)
+                .frame(height: placeholderHeight)
+                .opacityShimmer()
         }, placeholderView: {
             Color.gray.padding(0.2).frame(height: placeholderHeight)
         }, imageLoader: KingfisherImageLoader())
@@ -123,3 +125,4 @@ struct MovieDetailView: View {
             .padding(.trailing)
     }
 }
+

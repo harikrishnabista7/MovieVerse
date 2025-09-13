@@ -13,7 +13,7 @@ struct MovieRowView: View {
     var body: some View {
         HStack(alignment: .center, spacing: 15) {
             AsyncImageView(url: movie.absoluteImageURL(path: movie.posterPath), contentMode: .fill, loadingView: {
-                Color.gray.opacity(0.2)
+                Color.gray.opacity(0.2).opacityShimmer()
             }, placeholderView: {
                 Color.gray.opacity(0.2)
             }, imageLoader: KingfisherImageLoader())

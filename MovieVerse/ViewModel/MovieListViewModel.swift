@@ -29,6 +29,10 @@ final class MovieListViewModel: ObservableObject {
     }
 
     func loadMovies() async {
+        guard searchText.isEmpty else {
+            return
+        }
+        
         isLoading = movies.isEmpty
         error = nil
 
