@@ -23,9 +23,7 @@ struct MovieListView: View {
             } else {
                 List {
                     ForEach(viewModel.movies) { movie in
-                        NavigationLink {
-                            Text("Detail")
-                        } label: {
+                        NavigationLink(value: AppCoordinator.AppCoordinatorRoute.movieDetail(movie.id)) {
                             MovieRowView(movie: movie)
                         }
                     }

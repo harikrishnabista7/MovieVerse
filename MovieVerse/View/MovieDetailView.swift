@@ -8,23 +8,48 @@
 import SwiftUI
 
 struct MovieDetailView: View {
-    let movieDetail: MovieDetail
+    @StateObject private var viewModel: MovieDetailViewModel
+
+    init(movieId: Int32, repo: MovieRepository) {
+        _viewModel = StateObject(wrappedValue: .init(movieId: movieId, movieRepo: repo))
+    }
 
     var body: some View {
+        Group {
+            if viewModel.isLoading {
+                ProgressView()
+            } else if let movieDetail = viewModel.detail {
+                contentView(movieDetail: movieDetail)
+            } else if viewModel.error != nil {
+                Text(viewModel.error!)
+
+            } else {
+                Color.clear
+            }
+        }
+        .task {
+            await viewModel.getMovieDetail()
+        }
+    }
+
+    @ViewBuilder
+    private func contentView(movieDetail: MovieDetail) -> some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
                 // backdroop
-                imageView(url: MovieHelper.absoluteImageURL(size: .w500, path: movieDetail.backdropPath), contentMode: .fill)
+                imageView(url: MovieHelper.absoluteImageURL(size: .w500, path: movieDetail.backdropPath),
+                          contentMode: .fill,
+                          placeholderHeight: 200)
                     .frame(maxHeight: 300)
                     .clipped()
                     .overlay(alignment: .bottomTrailing) {
-                        rating
+                        rating(movieDetail: movieDetail)
                     }
                     .overlay(alignment: .bottomLeading) {
                         HStack(alignment: .top) {
-                            posterImage
+                            posterImageView(movieDetail: movieDetail)
 
-                            title
+                            titleView(movieDetail: movieDetail)
                                 .offset(y: 70)
                         }
                         .offset(y: 60)
@@ -48,6 +73,7 @@ struct MovieDetailView: View {
 
                     Text(verbatim: .aboutMovie)
                         .bold()
+
                     Text(movieDetail.overview)
                 }
                 .padding(.horizontal)
@@ -56,15 +82,10 @@ struct MovieDetailView: View {
         }
     }
 
-    var overView: some View {
-        Text(movieDetail.overview)
-            .lineLimit(2)
-            .bold()
-    }
-
-    var rating: some View {
+    @ViewBuilder
+    private func rating(movieDetail: MovieDetail) -> some View {
         HStack(spacing: 5) {
-            Image(systemName: "star")
+            Image(systemName: SystemName.star)
             Text("\(movieDetail.rating, specifier: "%.1f")")
         }
         .foregroundStyle(.orange)
@@ -77,34 +98,28 @@ struct MovieDetailView: View {
     }
 
     @ViewBuilder
-    func imageView(url: URL?, contentMode: ContentMode) -> some View {
+    private func imageView(url: URL?, contentMode: ContentMode, placeholderHeight: CGFloat) -> some View {
         AsyncImageView(url: url, contentMode: contentMode, loadingView: {
-            Color.gray.padding(0.2)
+            Color.gray.padding(0.2).frame(height: placeholderHeight)
         }, placeholderView: {
-            Color.gray.padding(0.2)
+            Color.gray.padding(0.2).frame(height: placeholderHeight)
         }, imageLoader: KingfisherImageLoader())
     }
 
-    var posterImage: some View {
+    @ViewBuilder
+    private func posterImageView(movieDetail: MovieDetail) -> some View {
         imageView(url: MovieHelper.absoluteImageURL(size: .w200, path: movieDetail.posterPath),
-                  contentMode: .fill)
+                  contentMode: .fill, placeholderHeight: 120)
             .frame(width: 95, height: 120)
             .cornerRadius(16)
             .padding(.leading)
     }
 
-    var title: some View {
+    @ViewBuilder
+    private func titleView(movieDetail: MovieDetail) -> some View {
         Text(movieDetail.title)
             .lineLimit(2)
             .bold()
             .padding(.trailing)
     }
-}
-
-#Preview {
-    let detail: MovieDetail = .init(title: "The Conjuring: Last Rites", id: 1, releaseDate: "2024-01-01", posterPath: "/kOzwIr0R7WhaFgoYUZFLPZA2RBZ.jpg", backdropPath: "/kOzwIr0R7WhaFgoYUZFLPZA2RBZ.jpg", rating: 6.58, runtime: 135, overview: "In 1520, the notorious and power-hungry Danish King Christian II is determined to seize the Swedish crown from Sten Sture, no matter what it takes. Meanwhile, sisters Freja and Anne make a solemn promise to seek revenge on the men who brutally murdered their family. Everything comes to a head in the heart of Stockholm, where the sisters are drawn into a ruthless political struggle between Sweden and Denmark that culminates in a mass execution, presided over by the mad King \"Christian the Tyrant,\" known as the Stockholm Bloodbath.", genres: [
-        .init(id: 1, name: "Action"),
-        // .init(id: 1, name: "Documentary")
-    ])
-    MovieDetailView(movieDetail: detail)
 }

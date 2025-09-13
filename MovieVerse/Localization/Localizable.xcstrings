@@ -28,9 +28,6 @@
         }
       }
     },
-    "Detail" : {
-
-    },
     "min" : {
       "extractionState" : "manual",
       "localizations" : {

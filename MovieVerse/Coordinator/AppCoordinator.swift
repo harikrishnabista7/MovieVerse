@@ -12,7 +12,7 @@ final class AppCoordinator: Coordinator {
         var id: Self { self }
 
         case movieList
-        case movieDetail(Int)
+        case movieDetail(Int32)
     }
 
     @Published var path: NavigationPath
@@ -40,8 +40,8 @@ final class AppCoordinator: Coordinator {
         switch route {
         case .movieList:
             MovieListView(repo: repo)
-        case .movieDetail:
-            Text("Detail")
+        case .movieDetail(let movieId):
+            MovieDetailView(movieId: movieId, repo: repo)
         }
     }
 

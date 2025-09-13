@@ -9,4 +9,5 @@ struct SystemName {
     static let calender = "calendar"
     static let clock = "clock"
     static let tag = "tag"
+    static let star = "star"
 }
