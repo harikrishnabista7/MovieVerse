@@ -16,6 +16,8 @@ struct MovieCoreDataCacheDataSource: MovieCacheDataSource {
     @MainActor
     func getMovies() async throws -> [Movie] {
         let fetchRequest = DBMovie.fetchRequest()
+        fetchRequest.fetchLimit = 20
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "popularity", ascending: false)]
         let dMovies = try controller.viewContext.fetch(fetchRequest)
         return dMovies.map { $0.toMovie() }
     }
@@ -24,6 +26,9 @@ struct MovieCoreDataCacheDataSource: MovieCacheDataSource {
     func searchMovies(query: String) async throws -> [Movie] {
         let fetchRequest = DBMovie.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "title CONTAINS[cd] %@", query)
+        fetchRequest.fetchLimit = 20
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "popularity", ascending: false)]
+        
         let dMovies = try controller.viewContext.fetch(fetchRequest)
         return dMovies.map { $0.toMovie() }
     }
@@ -54,14 +59,16 @@ extension DBMovie {
     func initWith(_ movie: Movie) {
         id = Int32(movie.id)
         title = movie.title
-        releaseData = movie.releaseDate
+        releaseDate = movie.releaseDate
         posterPath = movie.posterPath
+        popularity = movie.popularity
     }
 
     func toMovie() -> Movie {
         .init(title: title ?? "",
               id: Int(id),
-              releaseDate: releaseData ?? "",
-              posterPath: posterPath ?? "")
+              releaseDate: releaseDate ?? "",
+              posterPath: posterPath ?? "",
+              popularity: popularity)
     }
 }

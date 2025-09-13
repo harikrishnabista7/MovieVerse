@@ -44,16 +44,24 @@ struct Movie: Decodable, Equatable, Identifiable {
     let releaseDate: String
 
     /// A partial URL path to the movie poster image.
-    ///
+    /// 
     /// This path should be appended to TMDB’s base image URL.
     /// Example: `"/yvirUYrva23IudARHn3mMGVxWqM.jpg"`
     let posterPath: String
+    
+    
+    /// Popularity score of the movie
+    ///
+    /// Example: 590.6444
+    let popularity: Double
+    
 
     enum CodingKeys: String, CodingKey {
         case title
         case id
         case releaseDate = "release_date"
         case posterPath = "poster_path"
+        case popularity
     }
 }
 

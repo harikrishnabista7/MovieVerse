@@ -39,6 +39,6 @@ struct MovieRowView: View {
 
 #Preview {
     MovieRowView(movie:
-        .init(title: "The Conjuring: Last Rites", id: 1, releaseDate: "2025", posterPath: "/kOzwIr0R7WhaFgoYUZFLPZA2RBZ.jpg")
+            .init(title: "The Conjuring: Last Rites", id: 1, releaseDate: "2025", posterPath: "/kOzwIr0R7WhaFgoYUZFLPZA2RBZ.jpg", popularity: 0)
     )
 }

@@ -61,7 +61,7 @@ final class MovieListViewModel: ObservableObject {
 
     private func observeTextChanged() {
         $searchText
-            .debounce(for: .milliseconds(500), scheduler: RunLoop.main)
+            .debounce(for: .milliseconds(200), scheduler: RunLoop.main)
             .sink { [weak self] query in
                 self?.searchMovies(query: query)
             }
