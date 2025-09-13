@@ -44,19 +44,46 @@ final class DefaultMovieRepositoryIntegrationTests: XCTestCase {
         }
     }
     
-//    @MainActor
-//    func test_DMR_SearchMovies_ShouldReturnMoviesFromQuery() async {
-//        let network = MovieNetworkDataSource(client: DefaultNetworkClient(), requestMaker: NetworkRequestMaker(authHeaderProvider: BearerAuthHeaderProvider(token: Config.movieAccessToken ?? "")))
-//        let cache = MovieCoreDataCacheDataSource(controller: .preview)
-//
-//        let repository = DefaultMovieRepository(network: network, cache: cache)
-//
-//        do {
-//            for try await _ in repository.getMovies() { }
-//            let movies = try await cache.getMovies()
-//            XCTAssertTrue(movies.count > 0)
-//        } catch {
-//            XCTFail(error.localizedDescription)
-//        }
-//    }
+    @MainActor
+    func test_DMR_SearchMovies_ShouldReturnMoviesFromQuery() async {
+        let network = MovieNetworkDataSource(client: DefaultNetworkClient(), requestMaker: NetworkRequestMaker(authHeaderProvider: BearerAuthHeaderProvider(token: Config.movieAccessToken ?? "")))
+        let cache = MovieCoreDataCacheDataSource(controller: .preview)
+
+        let repository = DefaultMovieRepository(network: network, cache: cache)
+
+        do {
+            var movies: [Movie] = []
+            for try await batch in repository.getMovies() {
+                movies = batch
+            }
+            XCTAssertTrue(movies.count > 0)
+            let query = movies[0].title
+            let searched = try await repository.searchMovies(query: query)
+            XCTAssertEqual(searched.first?.title ?? "", query)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+    
+    @MainActor
+    func test_DMR_GetMovieDetail_ShouldDetail() async {
+        let network = MovieNetworkDataSource(client: DefaultNetworkClient(), requestMaker: NetworkRequestMaker(authHeaderProvider: BearerAuthHeaderProvider(token: Config.movieAccessToken ?? "")))
+        let cache = MovieCoreDataCacheDataSource(controller: .preview)
+
+        let repository = DefaultMovieRepository(network: network, cache: cache)
+
+        do {
+            var movies: [Movie] = []
+            for try await batch in repository.getMovies() {
+                movies = batch
+            }
+            XCTAssertTrue(movies.count > 0)
+            let id = movies[0].id
+            let detail = try await repository.getMovieDetail(id: id)
+            XCTAssertEqual(detail.id, id)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+
 }
