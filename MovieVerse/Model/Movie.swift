@@ -75,3 +75,19 @@ extension Movie {
         return String(year)
     }
 }
+
+struct MovieHelper {
+    enum ThumbnailSize: String {
+        case original
+        case w200
+        case w500
+    }
+    static func absoluteImageURL(size: ThumbnailSize = .w200, path: String) -> URL? {
+        URL(string: "https://image.tmdb.org/t/p/\(size.rawValue)\(path)")
+    }
+    
+    static func releaseYearStr(_ releaseDate: String) -> String {
+        let year = releaseDate.split(separator: "-").first ?? ""
+        return String(year)
+    }
+}

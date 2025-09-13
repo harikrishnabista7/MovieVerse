@@ -81,7 +81,7 @@ struct MovieCoreDataCacheDataSource: MovieCacheDataSource {
 
 // MARK: - DBMovie
 
-extension DBMovie {
+fileprivate extension DBMovie {
     func initWith(_ movie: Movie) {
         id = movie.id
         title = movie.title
@@ -101,7 +101,7 @@ extension DBMovie {
 
 // MARK: - DBMovieDetail
 
-extension DBMovieDetail {
+fileprivate extension DBMovieDetail {
     func initWith(_ movieDetail: MovieDetail) {
         id = Int32(movieDetail.id)
         title = movieDetail.title
@@ -133,7 +133,7 @@ extension DBMovieDetail {
 
 // MARK: - DBMovieDetail
 
-extension DBGenre {
+fileprivate extension DBGenre {
     func initWith(_ genre: Genre) {
         id = genre.id
         name = genre.name
