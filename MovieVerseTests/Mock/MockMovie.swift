@@ -9,7 +9,7 @@ import Foundation
 @testable import MovieVerse
 
 extension Movie {
-    static func mock(id: Int, title: String = "Interstellar") -> Movie {
-        return Movie(title: title, id: id, releaseDate: "", posterPath: "")
+    static func mock(id: Int32, title: String = "Interstellar") -> Movie {
+        return Movie(title: title, id: id, releaseDate: "", posterPath: "", popularity: 100)
     }
 }

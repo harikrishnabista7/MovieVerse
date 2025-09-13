@@ -35,7 +35,7 @@ struct MockMovieNetworkDataSource: MovieDataSource {
         return try handleMoviesScenario()
     }
 
-    func getMovieDetail(id: Int) async throws -> MovieDetail {
+    func getMovieDetail(id: Int32) async throws -> MovieDetail {
         try await Task.sleep(nanoseconds: delay)
 
         if case let .detail(detail) = scenario {

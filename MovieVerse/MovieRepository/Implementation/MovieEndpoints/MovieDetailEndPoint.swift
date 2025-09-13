@@ -8,9 +8,9 @@
 import Foundation
 
 struct MovieDetailEndPoint: NetworkEndPoint {
-    let movieId: Int
+    let movieId: Int32
 
-    init(movieId: Int) {
+    init(movieId: Int32) {
         self.movieId = movieId
     }
 

@@ -29,15 +29,10 @@ struct MovieNetworkDataSource: MovieDataSource {
         return movies
     }
 
-    func getMovieDetail(id: Int) async throws -> MovieDetail {
-        .init(title: "", id: 0)
+    func getMovieDetail(id: Int32) async throws -> MovieDetail {
+        let request = try requestMaker.makeFor(endPoint: MovieDetailEndPoint(movieId: id))
+        let response = try await client.perform(request: request)
+        let detail = try response.decode(type: MovieDetail.self)
+        return detail
     }
 }
-
-
-
-
-
-
-
-

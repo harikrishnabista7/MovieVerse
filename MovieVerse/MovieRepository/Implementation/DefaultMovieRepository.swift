@@ -63,17 +63,17 @@ struct DefaultMovieRepository: MovieRepository {
         }
     }
 
-    func getMovieDetail(id: Int) async throws -> MovieDetail {
+    func getMovieDetail(id: Int32) async throws -> MovieDetail {
         do {
-            let details = try await network.getMovieDetail(id: id)
+            let detail = try await network.getMovieDetail(id: id)
 
             do {
-                try await cache.saveMovieDetail(details)
+                try await cache.saveMovieDetail(detail)
             } catch {
                 AppLogger.error(error.localizedDescription)
             }
 
-            return details
+            return detail
         } catch {
             return try await cache.getMovieDetail(id: id)
         }

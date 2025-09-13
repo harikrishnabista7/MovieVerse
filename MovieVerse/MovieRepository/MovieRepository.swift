@@ -42,5 +42,5 @@ protocol MovieRepository {
     /// - Parameter id: The unique identifier of the movie.
     /// - Returns: A `MovieDetail` object containing full information about the movie.
     /// - Throws: A `MovieRepositoryError` or another error if retrieval fails.
-    func getMovieDetail(id: Int) async throws -> MovieDetail
+    func getMovieDetail(id: Int32) async throws -> MovieDetail
 }

@@ -36,7 +36,14 @@ struct MockMovieRepository: MovieRepository {
         []
     }
 
-    func getMovieDetail(id: Int) async throws -> MovieDetail {
-        .init(title: "fsf", id: 1)
+    func getMovieDetail(id: Int32) async throws -> MovieDetail {
+        switch scenario {
+        case let .detail(detail):
+            return detail
+        case let .error(error):
+            throw error
+        default:
+            fatalError("Unsupported scenario for getMovieDetail")
+        }
     }
 }

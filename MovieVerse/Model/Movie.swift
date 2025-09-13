@@ -36,7 +36,7 @@ struct Movie: Decodable, Equatable, Identifiable {
     /// A unique identifier for the movie (as provided by TMDB).
     ///
     /// Example: `755898`
-    let id: Int
+    let id: Int32
 
     /// The official release date of the movie.
     ///

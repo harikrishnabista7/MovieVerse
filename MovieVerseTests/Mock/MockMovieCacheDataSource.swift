@@ -26,7 +26,7 @@ final class MockMovieCacheDataSource: MovieCacheDataSource {
         return try handleMoviesScenario()
     }
 
-    func getMovieDetail(id: Int) async throws -> MovieDetail {
+    func getMovieDetail(id: Int32) async throws -> MovieDetail {
         if case let .detail(detail) = scenario {
             return detail
         }
