@@ -22,6 +22,11 @@ final class MovieDetailViewModel: ObservableObject {
     }
 
     func getMovieDetail() async {
+        isLoading = true
+
+        defer {
+            isLoading = false
+        }
         do {
             detail = try await movieRepo.getMovieDetail(id: movieId)
         } catch {

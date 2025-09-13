@@ -9,25 +9,33 @@ import SwiftUI
 
 struct MovieListView: View {
     @StateObject private var viewModel: MovieListViewModel
-   
+
     init(repo: MovieRepository) {
         _viewModel = StateObject(wrappedValue: MovieListViewModel(repo: repo))
     }
 
     var body: some View {
-        List {
-            ForEach(viewModel.movies) { movie in
-                NavigationLink {
-                    Text("Detail")
-                } label: {
-                    MovieRowView(movie: movie)
+        Group {
+            if viewModel.isLoading {
+                ProgressView()
+            } else if viewModel.error != nil {
+                Text(viewModel.error!)
+            } else {
+                List {
+                    ForEach(viewModel.movies) { movie in
+                        NavigationLink {
+                            Text("Detail")
+                        } label: {
+                            MovieRowView(movie: movie)
+                        }
+                    }
                 }
             }
         }
         .searchable(text: $viewModel.searchText)
         .navigationTitle(Text(verbatim: .movieVerse))
         .task {
-           await viewModel.loadMovies()
+            await viewModel.loadMovies()
         }
     }
 }
@@ -44,4 +52,3 @@ struct MovieListView: View {
         MovieListView(repo: repo)
     }
 }
-

@@ -13,6 +13,7 @@ final class MovieListViewModel: ObservableObject {
     @Published private(set) var movies: [Movie] = []
     @Published private(set) var error: String?
     @Published var searchText: String = ""
+    @Published var isLoading: Bool = false
 
     private let movieRepo: MovieRepository
     private var cancellables: Set<AnyCancellable> = []
@@ -28,34 +29,48 @@ final class MovieListViewModel: ObservableObject {
     }
 
     func loadMovies() async {
+        isLoading = movies.isEmpty
+        error = nil
+
         do {
             for try await batch in movieRepo.getMovies() { // show latest stream
                 movies = batch
                 originalMovies = batch
             }
         } catch {
-            self.error = error.localizedDescription
+            AppLogger.error(error.localizedDescription)
         }
+        isLoading = false
+        error = movies.isEmpty ? "No movies found" : nil
     }
 
     private func searchMovies(query: String) {
+        error = nil
+        isLoading = movies.isEmpty
+
         searchTask?.cancel()
         if query.isEmpty {
             movies = originalMovies
+            isLoading = false
         } else {
             searchTask = Task { [weak self] in
                 guard let self else { return }
                 do {
-                    guard !Task.isCancelled else { return }
-                    
-                    let movies = try await self.movieRepo.searchMovies(query: query)
+                    guard !Task.isCancelled else {
+                        isLoading = false
+                        return
+                    }
+
+                    let movies = try await self.movieRepo.searchMovies(query: query.trimmingCharacters(in: .whitespacesAndNewlines))
                     searchedMovies = movies
                     self.movies = movies
+
                 } catch {
                     AppLogger.error(error.localizedDescription)
                 }
+                isLoading = false
+                error = movies.isEmpty ? "No movies found" : nil
             }
-
         }
     }
 
