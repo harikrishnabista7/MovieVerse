@@ -45,7 +45,9 @@ final class MovieListViewModel: ObservableObject {
             AppLogger.error(error.localizedDescription)
         }
         isLoading = false
-        error = movies.isEmpty ? "No movies found" : nil
+        if movies.isEmpty {
+            error = NetworkMonitor.shared.isConnected ? "No movies found" : "Please check your internet connection"
+        }
     }
 
     private func searchMovies(query: String) {
@@ -73,7 +75,9 @@ final class MovieListViewModel: ObservableObject {
                     AppLogger.error(error.localizedDescription)
                 }
                 isLoading = false
-                error = movies.isEmpty ? "No movies found" : nil
+                if movies.isEmpty {
+                    error = NetworkMonitor.shared.isConnected ? "No movies found" : "Please check your internet connection"
+                }
             }
         }
     }

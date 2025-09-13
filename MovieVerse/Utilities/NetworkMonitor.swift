@@ -5,22 +5,22 @@
 //  Created by hari krishna on 11/09/2025.
 //
 
-
+import Foundation
 import Network
 
-final class NetworkMonitor {
+final class NetworkMonitor: ObservableObject {
     static let shared = NetworkMonitor()
-    
+
     private let monitor = NWPathMonitor()
     private let queue = DispatchQueue(label: "NetworkMonitorQueue")
-    
-    private(set) var isConnected: Bool = false
+
+    @Published private(set) var isConnected: Bool = false
     private(set) var connectionType: NWInterface.InterfaceType?
 
     private init() {
         monitor.pathUpdateHandler = { [weak self] path in
             self?.isConnected = path.status == .satisfied
-            
+
             if let interface = path.availableInterfaces.first(where: { path.usesInterfaceType($0.type) }) {
                 self?.connectionType = interface.type
             } else {
@@ -28,5 +28,10 @@ final class NetworkMonitor {
             }
         }
         monitor.start(queue: queue)
+    }
+
+    // Test helper methods
+    func simulateConnectionChange(isConnected: Bool) {
+        self.isConnected = isConnected
     }
 }
