@@ -25,7 +25,7 @@ struct MovieListView: View {
             }
         }
         .searchable(text: $viewModel.searchText)
-        .navigationTitle(Text("MovieVerse"))
+        .navigationTitle(Text(verbatim: .movieVerse))
         .task {
            await viewModel.loadMovies()
         }
@@ -44,3 +44,4 @@ struct MovieListView: View {
         MovieListView(repo: repo)
     }
 }
+

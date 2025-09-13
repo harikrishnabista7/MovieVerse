@@ -11,4 +11,6 @@ struct Constants {
         case apiKey = "api_key"
         case query
     }
+
+    
 }

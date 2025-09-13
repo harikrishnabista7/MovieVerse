@@ -33,20 +33,20 @@ struct MovieDetailView: View {
                 VStack(alignment: .leading, spacing: 10) {
                     HStack {
                         Spacer()
-                        Label(MovieHelper.releaseYearStr(movieDetail.releaseDate), systemImage: "calendar")
+                        Label(MovieHelper.releaseYearStr(movieDetail.releaseDate), systemImage: SystemName.calender)
                         Text("|")
-                        Label("\(movieDetail.runtime) min", systemImage: "clock")
+                        Label("\(movieDetail.runtime) \(String.min)", systemImage: SystemName.clock)
 
                         if !movieDetail.genres.isEmpty {
                             Text("|")
-                            Label(movieDetail.genres[0].name, systemImage: "tag")
+                            Label(movieDetail.genres[0].name, systemImage: SystemName.tag)
                         }
 
                         Spacer()
                     }
                     .padding(.bottom)
 
-                    Text("About Movie")
+                    Text(verbatim: .aboutMovie)
                         .bold()
                     Text(movieDetail.overview)
                 }
