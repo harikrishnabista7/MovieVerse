@@ -33,7 +33,14 @@ struct MockMovieRepository: MovieRepository {
     }
 
     func searchMovies(query: String) async throws -> [Movie] {
-        []
+        switch scenario {
+        case let .movies(movies):
+            return movies.filter { $0.title.lowercased().contains(query.lowercased()) }
+        case let .error(error):
+            throw error
+        default:
+            fatalError("Unsupported scenario for searchMovies")
+        }
     }
 
     func getMovieDetail(id: Int32) async throws -> MovieDetail {

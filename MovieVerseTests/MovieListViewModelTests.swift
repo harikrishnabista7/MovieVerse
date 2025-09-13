@@ -25,6 +25,50 @@ final class MovieListViewModelTests: XCTestCase {
         XCTAssertNotNil(viewModel.error)
     }
 
+    @MainActor
+    func test_VM_SearchMovie_ReturnsMoviesMatchingSearchText() async {
+        let viewModel = makeSut(scenario: .movies([
+            Movie.mock(id: 1, title: "Shuttle Island"),
+            Movie.mock(id: 2, title: "Inception"),
+        ]))
+        let searchExpectation = expectation(description: "Search expectation")
+
+        let cancellable = viewModel.$movies.sink { movies in
+            if movies.count == 1 && movies.first?.title.contains("Shuttle") == true {
+                searchExpectation.fulfill()
+            }
+        }
+
+        viewModel.searchText = "shut"
+
+        await fulfillment(of: [searchExpectation], timeout: 1.0)
+        cancellable.cancel()
+
+        XCTAssertEqual(viewModel.movies.count, 1)
+    }
+
+    @MainActor
+    func test_VM_SearchMovie_ReturnsEmptyMoviesWhenSearchTextDoesMatch() async {
+        let viewModel = makeSut(scenario: .movies([
+            Movie.mock(id: 1, title: "Shuttle Island"),
+            Movie.mock(id: 2, title: "Inception"),
+        ]))
+        let searchExpectation = expectation(description: "Search expectation")
+
+        let cancellable = viewModel.$movies.sink { movies in
+            if movies.count == 0 {
+                searchExpectation.fulfill()
+            }
+        }
+
+        viewModel.searchText = "Inter"
+
+        await fulfillment(of: [searchExpectation], timeout: 1.0)
+        cancellable.cancel()
+
+        XCTAssertEqual(viewModel.movies.count, 0)
+    }
+
     // MARK: - Helper
 
     private var movies: [Movie] {
@@ -44,4 +88,3 @@ final class MovieListViewModelTests: XCTestCase {
         return MovieListViewModel(repo: MockMovieRepository(scenario: scenario))
     }
 }
-
