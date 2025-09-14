@@ -8,6 +8,7 @@
 import Foundation
 import Network
 
+/// A singleton class that monitors network connectivity status and publishes real-time updates.
 final class NetworkMonitor: ObservableObject {
     static let shared = NetworkMonitor()
 
@@ -29,9 +30,12 @@ final class NetworkMonitor: ObservableObject {
         }
         monitor.start(queue: queue)
     }
+}
 
-    // Test helper methods
-    func simulateConnectionChange(isConnected: Bool) {
-        self.isConnected = isConnected
+// MARK: - ConnectionMonitor
+
+extension NetworkMonitor: ConnectionMonitor {
+    var isConnectedPublisher: Published<Bool>.Publisher {
+        $isConnected
     }
 }

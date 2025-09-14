@@ -28,6 +28,17 @@
         }
       }
     },
+    "checkInternet" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please check your internet connection"
+          }
+        }
+      }
+    },
     "min" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -46,6 +57,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "MovieVerse"
+          }
+        }
+      }
+    },
+    "noDetailFound" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No detail found"
           }
         }
       }

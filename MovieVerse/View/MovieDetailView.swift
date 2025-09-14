@@ -88,6 +88,7 @@ struct MovieDetailView: View {
             Image(systemName: SystemName.star)
             Text("\(movieDetail.rating, specifier: "%.1f")")
         }
+        .bold()
         .foregroundStyle(.orange)
         .font(.caption)
         .padding(.horizontal, 10)

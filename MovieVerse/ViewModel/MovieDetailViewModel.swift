@@ -5,8 +5,8 @@
 //  Created by hari krishna on 13/09/2025.
 //
 
-import Foundation
 import Combine
+import Foundation
 
 @MainActor
 final class MovieDetailViewModel: ObservableObject {
@@ -17,10 +17,12 @@ final class MovieDetailViewModel: ObservableObject {
     private let movieRepo: MovieRepository
     private let movieId: Int32
     private var cancellables: Set<AnyCancellable> = []
+    private let connectionMonitor: any ConnectionMonitor
 
-    init(movieId: Int32, movieRepo: MovieRepository) {
+    init(movieId: Int32, movieRepo: MovieRepository, connectionMonitor: any ConnectionMonitor = NetworkMonitor.shared) {
         self.movieId = movieId
         self.movieRepo = movieRepo
+        self.connectionMonitor = connectionMonitor
         observeNetworkChange()
     }
 
@@ -33,13 +35,12 @@ final class MovieDetailViewModel: ObservableObject {
         do {
             detail = try await movieRepo.getMovieDetail(id: movieId)
         } catch {
-            self.error = NetworkMonitor.shared.isConnected ? "No detail found" : "Please check your internet connection"
+            self.error = connectionMonitor.isConnected ? .noDetailFound : .checkInternet
         }
     }
-    
 
     private func observeNetworkChange() {
-        NetworkMonitor.shared.$isConnected
+        connectionMonitor.isConnectedPublisher
             .drop(while: { [weak self] _ in
                 self?.detail != nil
             })
