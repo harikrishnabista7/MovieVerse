@@ -2,9 +2,8 @@
 //  MockError.swift
 //  MovieVerse
 //
-//  Created by hari krishna on 11/09/2025.
+//  Created by hari krishna on 14/09/2025.
 //
-
 import Foundation
 
 struct MockError: LocalizedError {

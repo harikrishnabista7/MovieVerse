@@ -4,9 +4,7 @@
 //
 //  Created by hari krishna on 14/09/2025.
 //
-
-import Combine
-@testable import MovieVerse
+import Foundation
 import Network
 
 // MARK: - Mock NetworkMonitor for Testing

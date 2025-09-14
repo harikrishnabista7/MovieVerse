@@ -2,10 +2,9 @@
 //  MockMovieRepository.swift
 //  MovieVerse
 //
-//  Created by hari krishna on 12/09/2025.
+//  Created by hari krishna on 14/09/2025.
 //
 import Foundation
-@testable import MovieVerse
 
 struct MockMovieRepository: MovieRepository {
     private let scenario: MovieMockScenario
