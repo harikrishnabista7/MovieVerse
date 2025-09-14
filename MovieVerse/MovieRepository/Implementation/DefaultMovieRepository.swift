@@ -94,7 +94,11 @@ struct DefaultMovieRepository: MovieRepository {
     /// - Returns: movie: list of movies
     func getMoviesPage(searchQuery: String?, after lastMovieId: Int32?) async throws -> [Movie] {
         if NetworkMonitor.shared.isConnected {
-            return try await network.getMoviesPage(searchQuery: searchQuery, after: lastMovieId)
+            let networkMovies = try await network.getMoviesPage(searchQuery: searchQuery, after: lastMovieId)
+
+            await saveToCache(networkMovies)
+
+            return networkMovies
         } else {
             return try await cache.getMoviesPage(searchQuery: searchQuery, after: lastMovieId)
         }
