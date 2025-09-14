@@ -80,7 +80,7 @@ final class MovieListViewModelTests: XCTestCase {
         XCTAssertNil(viewModel.error)
 
         connection.simulateConnectionChange(isConnected: false)
-        try? await Task.sleep(for: .milliseconds(200))
+        try? await Task.sleep(for: .milliseconds(300))
 
         XCTAssertEqual(viewModel.error, String.checkInternet)
     }
@@ -99,7 +99,7 @@ final class MovieListViewModelTests: XCTestCase {
         
         XCTAssertTrue(viewModel.movies.isEmpty)
         connection.simulateConnectionChange(isConnected: true)
-        try? await Task.sleep(for: .milliseconds(200))
+        try? await Task.sleep(for: .milliseconds(300))
         
         XCTAssertFalse(viewModel.movies.isEmpty)
     }
@@ -119,7 +119,7 @@ final class MovieListViewModelTests: XCTestCase {
         
         XCTAssertTrue(viewModel.movies.isEmpty)
         connection.simulateConnectionChange(isConnected: true)
-        try? await Task.sleep(for: .milliseconds(200))
+        try? await Task.sleep(for: .milliseconds(300))
         
         XCTAssertFalse(viewModel.movies.isEmpty)
     }

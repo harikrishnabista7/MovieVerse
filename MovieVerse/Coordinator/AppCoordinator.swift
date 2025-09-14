@@ -31,8 +31,17 @@ final class AppCoordinator: Coordinator {
             requestMaker: NetworkRequestMaker(authHeaderProvider: BearerAuthHeaderProvider(token: Config.movieAccessToken ?? "")))
 
         let cache = MovieCoreDataCacheDataSource(controller: .shared)
-
-        repo = DefaultMovieRepository(network: network, cache: cache)
+        let env = ProcessInfo.processInfo.environment
+        
+//        if env["MOCK_MOVIE_ERROR"] == "true" {
+//            repo = MockMovieNetworkDataSource(scenario: .error(URLError(.badURL)))
+//        } else if env["MOCK_MOVIE_SUCCESS"] == "true" {
+//            
+//        } else if env["MOCK_MOVIE_DETAIL"] == "true" {
+//            
+//        } else {
+            repo = DefaultMovieRepository(network: network, cache: cache)
+//        }
     }
 
     @ViewBuilder

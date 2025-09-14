@@ -8,16 +8,22 @@ import Foundation
 
 struct MockMovieRepository: MovieRepository {
     private let scenario: MovieMockScenario
+    private let ignoreCache: Bool
+    private let delay: TimeInterval
 
-    init(scenario: MovieMockScenario) {
+    init(scenario: MovieMockScenario, ignoreCache: Bool = false, delay: TimeInterval = 0.0) {
         self.scenario = scenario
+        self.ignoreCache = ignoreCache
+        self.delay = delay
     }
 
     func getMovies() -> AsyncThrowingStream<[Movie], any Error> {
         AsyncThrowingStream { continuation in
             switch scenario {
             case let .movies(movies):
-                continuation.yield(movies) // cache load first test
+                if !ignoreCache {
+                    continuation.yield(movies) // cache load first test
+                }
 
                 Thread.sleep(forTimeInterval: 0.1)
                 continuation.yield(movies) // network load second
@@ -32,6 +38,8 @@ struct MockMovieRepository: MovieRepository {
     }
 
     func searchMovies(query: String) async throws -> [Movie] {
+        try? await Task.sleep(for: .milliseconds(UInt64(delay)))
+
         switch scenario {
         case let .movies(movies):
             return movies.filter { $0.title.lowercased().contains(query.lowercased()) }
@@ -43,6 +51,8 @@ struct MockMovieRepository: MovieRepository {
     }
 
     func getMovieDetail(id: Int32) async throws -> MovieDetail {
+        try? await Task.sleep(for: .milliseconds(UInt64(delay)))
+
         switch scenario {
         case let .detail(detail):
             return detail
