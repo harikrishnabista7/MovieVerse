@@ -6,10 +6,11 @@
 //
 import Foundation
 
-struct MockMovieRepository: MovieRepository {
+final class MockMovieRepository: MovieRepository {
     private let scenario: MovieMockScenario
     private let excludeCacheSimulation: Bool
     private let delay: TimeInterval
+    private(set) var favoriteMovies: Set<Int32> = []
 
     init(scenario: MovieMockScenario, excludeCacheSimulation: Bool = false, delay: TimeInterval = 0.0) {
         self.scenario = scenario
@@ -63,8 +64,28 @@ struct MockMovieRepository: MovieRepository {
     }
     
     func getMoviesPage(searchQuery: String?, after lastMovieId: Int32?) async throws -> [Movie] {
-        []
+        switch scenario {
+        case let .movies(movies):
+            return movies
+        case let .error(error):
+            throw error
+        default:
+            fatalError("Unsupported scenario for searchMovies")
+        }
     }
+    
+    func addMovieToFavorites(_ movieId: Int32) async throws {
+        favoriteMovies.insert(movieId)
+    }
+    
+    func removeMovieFromFavorites(_ movieId: Int32) async throws {
+        favoriteMovies.remove(movieId)
+    }
+
+    func isFavoriteMovie(_ movieId: Int32) async throws -> Bool {
+        favoriteMovies.contains(movieId)
+    }
+
 
     func getMovieDetail(id: Int32) async throws -> MovieDetail {
         try? await Task.sleep(for: .milliseconds(UInt64(delay)))
@@ -80,4 +101,5 @@ struct MockMovieRepository: MovieRepository {
             fatalError("Unsupported scenario for getMovieDetail")
         }
     }
+   
 }

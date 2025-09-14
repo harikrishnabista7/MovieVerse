@@ -11,6 +11,7 @@ final class MockMovieCacheDataSource: MovieCacheDataSource {
     private(set) var isCacheCalled = false
     private(set) var savedMovies: [Movie] = []
     private(set) var savedDetail: MovieDetail?
+    private(set) var favoriteMovies: Set<Int32> = []
 
     init(scenario: MovieMockScenario) {
         self.scenario = scenario
@@ -32,7 +33,19 @@ final class MockMovieCacheDataSource: MovieCacheDataSource {
     }
     
     func getMoviesPage(searchQuery: String?, after lastMovieId: Int32?) async throws -> [Movie] {
-        []
+        return try handleMoviesScenario()
+    }
+    
+    func addMovieToFavorites(_ movieId: Int32) async throws {
+        favoriteMovies.insert(movieId)
+    }
+    
+    func removeMovieFromFavorites(_ movieId: Int32) async throws {
+        favoriteMovies.remove(movieId)
+    }
+
+    func isFavoriteMovie(_ movieId: Int32) async throws -> Bool {
+        favoriteMovies.contains(movieId)
     }
 
     private func handleMoviesScenario() throws -> [Movie] {

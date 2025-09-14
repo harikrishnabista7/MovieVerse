@@ -42,4 +42,12 @@ protocol MovieDataSource {
     ///   - after: The ID of the last movie from the previous page (or nil for first page).
     /// - Returns: A list of movies for the next page.
     func getMoviesPage(searchQuery: String?, after lastMovieId: Int32?) async throws -> [Movie]
+
+    /// Adds movie to favorites list
+    /// - Parameter movieId: id: The unique identifier of the movie.
+    func addMovieToFavorites(_ movieId: Int32) async throws
+
+    /// Removes movie from favorites list
+    /// - Parameter movieId: id: The unique identifier of the movie.
+    func removeMovieFromFavorites(_ movieId: Int32) async throws
 }

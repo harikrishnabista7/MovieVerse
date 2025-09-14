@@ -6,9 +6,12 @@
 //
 
 
-struct MockMovieNetworkDataSource: MovieDataSource {
+final class MockMovieNetworkDataSource: MovieDataSource {
     let scenario: MovieMockScenario
     let delay: UInt64
+    
+    private(set) var favoriteMovies: Set<Int32> = []
+
 
     init(scenario: MovieMockScenario, delay: UInt64 = 1_000_000_000) {
         self.scenario = scenario
@@ -37,7 +40,17 @@ struct MockMovieNetworkDataSource: MovieDataSource {
     }
     
     func getMoviesPage(searchQuery: String?, after lastMovieId: Int32?) async throws -> [Movie] {
-        []
+        try await Task.sleep(nanoseconds: delay)
+
+        return try handleMoviesScenario()
+    }
+    
+    func addMovieToFavorites(_ movieId: Int32) async throws {
+        favoriteMovies.insert(movieId)
+    }
+    
+    func removeMovieFromFavorites(_ movieId: Int32) async throws {
+        favoriteMovies.remove(movieId)
     }
 
     private func handleMoviesScenario() throws -> [Movie] {

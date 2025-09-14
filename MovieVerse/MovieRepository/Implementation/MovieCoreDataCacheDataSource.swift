@@ -67,13 +67,45 @@ struct MovieCoreDataCacheDataSource: MovieCacheDataSource {
         return dMovies.map { $0.toMovie() }
     }
 
+    func addMovieToFavorites(_ movieId: Int32) async throws {
+        let context = getSavingContext()
+
+        try await context.perform {
+            let fetRequest = movieFetchRequest(for: movieId)
+            let movie = try context.fetch(fetRequest).first
+            movie?.isFavorite = true
+            try context.save()
+        }
+    }
+
+    func removeMovieFromFavorites(_ movieId: Int32) async throws {
+        let context = getSavingContext()
+
+        try await context.perform {
+            let fetRequest = movieFetchRequest(for: movieId)
+            let movie = try context.fetch(fetRequest).first
+            movie?.isFavorite = false
+            try context.save()
+        }
+    }
+
+    func isFavoriteMovie(_ movieId: Int32) async throws -> Bool {
+        let movie = try await getMovie(id: movieId)
+        return movie?.isFavorite ?? false
+    }
+
     func saveMovies(_ movies: [Movie]) async throws {
         let context = getSavingContext()
 
         try await context.perform {
-            movies.forEach {
-                let dbMovie = DBMovie(context: context)
+            try movies.forEach {
+                let fetRequest = movieFetchRequest(for: $0.id)
+                let movie = try context.fetch(fetRequest).first
+                let isFavorite = movie?.isFavorite ?? false
+
+                let dbMovie = movie ?? DBMovie(context: context)
                 dbMovie.initWith($0)
+                dbMovie.isFavorite = isFavorite
             }
             try context.save()
         }
@@ -95,6 +127,12 @@ struct MovieCoreDataCacheDataSource: MovieCacheDataSource {
         return try await controller.viewContext.fetch(fetchRequest).first
     }
 
+    private func movieFetchRequest(for id: Int32) -> NSFetchRequest<DBMovie> {
+        let fetchRequest: NSFetchRequest<DBMovie> = DBMovie.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %d", id)
+        return fetchRequest
+    }
+
     private func getSavingContext() -> NSManagedObjectContext {
         let backgroundContext = controller.container.newBackgroundContext()
         backgroundContext.automaticallyMergesChangesFromParent = true
@@ -112,6 +150,7 @@ fileprivate extension DBMovie {
         releaseDate = movie.releaseDate
         posterPath = movie.posterPath
         popularity = movie.popularity
+        isFavorite = false
     }
 
     func toMovie() -> Movie {

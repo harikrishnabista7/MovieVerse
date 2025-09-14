@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "" : {
+
+    },
     "%.1f" : {
 
     },
@@ -39,6 +42,17 @@
         }
       }
     },
+    "favorites" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favorites"
+          }
+        }
+      }
+    },
     "min" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -50,8 +64,16 @@
         }
       }
     },
-    "Movie List" : {
-
+    "movies" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Movies"
+          }
+        }
+      }
     },
     "movieVerse" : {
       "extractionState" : "manual",
@@ -63,6 +85,9 @@
           }
         }
       }
+    },
+    "No favorites found" : {
+
     },
     "noDetailFound" : {
       "extractionState" : "manual",

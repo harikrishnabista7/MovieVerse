@@ -20,6 +20,17 @@ struct MovieDetailView: View {
                 ProgressView()
             } else if let movieDetail = viewModel.detail {
                 contentView(movieDetail: movieDetail)
+                    .toolbar {
+                        ToolbarItem(placement: .navigation) {
+                            Button {
+                                viewModel.toggleFavorite()
+                            } label: {
+                                let name = viewModel.isFavorite ? "bookmark.fill" : "bookmark"
+                                Image(systemName: name)
+                            }
+
+                        }
+                    }
             } else if viewModel.error != nil {
                 Text(viewModel.error!)
 
@@ -61,14 +72,13 @@ struct MovieDetailView: View {
                         if !movieDetail.releaseDate.isEmpty {
                             Label(MovieHelper.releaseYearStr(movieDetail.releaseDate), systemImage: SystemName.calender)
                         }
-                        
-                        
+
                         Text("|")
 
                         if movieDetail.runtime > 0 {
                             Label("\(movieDetail.runtime) \(String.min)", systemImage: SystemName.clock)
                         }
-                        
+
                         Text("|")
 
                         if !movieDetail.genres.isEmpty {

@@ -13,6 +13,8 @@ final class MovieDetailViewModel: ObservableObject {
     @Published var detail: MovieDetail?
     @Published var isLoading: Bool = false
     @Published var error: String?
+    @Published var isFavorite: Bool = false
+    @Published var alertError: Bool = false
 
     private let movieRepo: MovieRepository
     private let movieId: Int32
@@ -35,6 +37,7 @@ final class MovieDetailViewModel: ObservableObject {
         }
         do {
             detail = try await movieRepo.getMovieDetail(id: movieId)
+            isFavorite = try await movieRepo.isFavoriteMovie(movieId)
         } catch {
             self.error = connectionMonitor.isConnected ? .noDetailFound : .checkInternet
         }
@@ -55,5 +58,22 @@ final class MovieDetailViewModel: ObservableObject {
                 }
             }
             .store(in: &cancellables)
+    }
+
+    func toggleFavorite() {
+        guard let detail = detail else { return }
+        Task {
+            do {
+                if isFavorite {
+                    try await movieRepo.removeMovieFromFavorites(detail.id)
+                } else {
+                    try await movieRepo.addMovieToFavorites(detail.id)
+                }
+                isFavorite.toggle()
+            } catch {
+                self.error = "Failed to toggle favorite status"
+                self.alertError = true
+            }
+        }
     }
 }

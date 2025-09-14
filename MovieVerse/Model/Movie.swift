@@ -63,15 +63,7 @@ struct Movie: Decodable, Equatable, Identifiable {
         case posterPath = "poster_path"
         case popularity
     }
-    
-//    init(from decoder: any Decoder) throws {
-//        let container = try decoder.container(keyedBy: CodingKeys.self)
-//        self.title = try container.decode(String.self, forKey: .title)
-//        self.id = try container.decode(Int32.self, forKey: .id)
-//        self.releaseDate = try container.decode(String.self, forKey: .releaseDate)
-//        self.posterPath = try container.decodeIfPresent(String.self, forKey: .posterPath)
-//        self.popularity = try container.decode(Double.self, forKey: .popularity)
-//    }
+
 }
 
 extension Movie {

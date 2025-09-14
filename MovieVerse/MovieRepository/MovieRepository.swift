@@ -7,11 +7,6 @@
 
 import Foundation
 
-/// Errors that can occur while interacting with the movie repository.
-enum MovieRepositoryError: Error {
-    /// Indicates a failure caused by network connectivity or request issues.
-    case networkError
-}
 
 /// A repository abstraction for managing movie data.
 ///
@@ -51,4 +46,21 @@ protocol MovieRepository {
     ///   - after: The ID of the last movie from the previous page (or nil for first page).
     /// - Returns: A list of movies for the next page.
     func getMoviesPage(searchQuery: String?, after lastMovieId: Int32?) async throws -> [Movie]
+    
+    
+    /// Adds movie to favorites list
+    /// - Parameter movieId: id: The unique identifier of the movie.
+    func addMovieToFavorites(_ movieId: Int32) async throws
+    
+    
+    /// Removes movie from favorites list
+    /// - Parameter movieId: id: The unique identifier of the movie.
+    func removeMovieFromFavorites(_ movieId: Int32) async throws
+    
+    
+    /// Checks if the movie is in favorite list or not
+    /// - Parameter movieId: id: The unique identifier of the movie.
+    /// - Returns: Bool, true for isFavorite otherwise false
+    func isFavoriteMovie(_ movieId: Int32) async throws -> Bool
+    
 }

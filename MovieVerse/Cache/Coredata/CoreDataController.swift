@@ -25,6 +25,7 @@ struct CoreDataController {
         }
 
         container.loadPersistentStores { description, error in
+            print(description.url)
             if let error = error {
                 if inMemory {
                     fatalError("Failed to load in-memory store: \(error)")

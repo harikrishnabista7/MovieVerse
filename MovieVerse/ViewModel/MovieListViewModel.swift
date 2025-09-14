@@ -8,18 +8,30 @@
 import Combine
 import Foundation
 
+/// Movies list mode to toggle the list content
+enum MovieListMode: String, CaseIterable {
+    case movies = "Movies"
+    case favorites = "Favorites"
+}
+
 @MainActor
 final class MovieListViewModel: ObservableObject {
     @Published private(set) var movies: [Movie] = []
     @Published private(set) var error: String?
     @Published var searchText: String = ""
     @Published var isLoading: Bool = false
+    @Published var selectedMode: MovieListMode = .movies {
+        didSet {
+            selectedMode == .movies ? showMovieLists() : showFavorites()
+        }
+    }
 
     private let movieRepo: MovieRepository
     private let connectionMonitor: any ConnectionMonitor
     private var cancellables: Set<AnyCancellable> = []
 
     private var originalMovies: [Movie] = []
+//    private var searchedMovies: [Movie] = []
 
     private var searchTask: Task<Void, Never>?
 
@@ -147,5 +159,13 @@ final class MovieListViewModel: ObservableObject {
                 }
             }
             .store(in: &cancellables)
+    }
+    
+    private func showMovieLists() {
+        movies = originalMovies
+    }
+    
+    private func showFavorites() {
+        movies = []
     }
 }

@@ -87,6 +87,18 @@ struct DefaultMovieRepository: MovieRepository {
         }
     }
 
+    func addMovieToFavorites(_ movieId: Int32) async throws {
+        try await cache.addMovieToFavorites(movieId)
+    }
+
+    func removeMovieFromFavorites(_ movieId: Int32) async throws {
+        try await cache.removeMovieFromFavorites(movieId)
+    }
+
+    func isFavoriteMovie(_ movieId: Int32) async throws -> Bool {
+        try await cache.isFavoriteMovie(movieId)
+    }
+    
     private func saveToCache(_ movies: [Movie]) async {
         do {
             try await cache.saveMovies(movies)

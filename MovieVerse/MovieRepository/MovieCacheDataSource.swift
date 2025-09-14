@@ -27,4 +27,9 @@ protocol MovieCacheDataSource: MovieDataSource {
     /// - Throws: An error if saving to the cache fails.
     /// - Note: This operation is asynchronous.
     func saveMovieDetail(_ detail: MovieDetail) async throws
+    
+    /// Checks if the movie is in favorite list or not
+    /// - Parameter movieId: id: The unique identifier of the movie.
+    /// - Returns: Bool, true for isFavorite otherwise false
+    func isFavoriteMovie(_ movieId: Int32) async throws -> Bool
 }
