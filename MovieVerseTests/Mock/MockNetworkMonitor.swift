@@ -13,8 +13,8 @@ import Network
 
 final class MockNetworkMonitor: ConnectionMonitor {
     init() { }
-    
-    @Published private(set) var isConnected: Bool = false
+
+    @Published private(set) var isConnected: Bool = true
 
     var isConnectedPublisher: Published<Bool>.Publisher { $isConnected }
 

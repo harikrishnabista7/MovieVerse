@@ -69,6 +69,60 @@ final class MovieListViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.movies.count, 0)
     }
 
+    @MainActor
+    func test_VM_NetworkWhenOfflineAndListEmpty_ShowsCheckInternetError() async {
+        let connection = MockNetworkMonitor()
+
+        let repo = MockMovieRepository(scenario: .movies([]))
+
+        let viewModel = MovieListViewModel(repo: repo, connectionMonitor: connection)
+
+        XCTAssertNil(viewModel.error)
+
+        connection.simulateConnectionChange(isConnected: false)
+        try? await Task.sleep(for: .milliseconds(200))
+
+        XCTAssertEqual(viewModel.error, String.checkInternet)
+    }
+    
+    @MainActor
+    func test_VM_NetworkWhenOnlineAndListEmpty_FetchesMovies() async {
+        let connection = MockNetworkMonitor()
+        connection.simulateConnectionChange(isConnected: false)
+        
+        let repo = MockMovieRepository(scenario: .movies([
+            Movie.mock(id: 1, title: "Shuttle Island"),
+            Movie.mock(id: 2, title: "Inception"),
+        ]))
+        
+        let viewModel = MovieListViewModel(repo: repo, connectionMonitor: connection)
+        
+        XCTAssertTrue(viewModel.movies.isEmpty)
+        connection.simulateConnectionChange(isConnected: true)
+        try? await Task.sleep(for: .milliseconds(200))
+        
+        XCTAssertFalse(viewModel.movies.isEmpty)
+    }
+
+    @MainActor
+    func test_VM_NetworkWhenOnlineAndListEmpty_SearchesMovies() async {
+        let connection = MockNetworkMonitor()
+        connection.simulateConnectionChange(isConnected: false)
+        
+        let repo = MockMovieRepository(scenario: .movies([
+            Movie.mock(id: 1, title: "Shuttle Island"),
+            Movie.mock(id: 2, title: "Inception"),
+        ]))
+        
+        let viewModel = MovieListViewModel(repo: repo, connectionMonitor: connection)
+        viewModel.searchText = "Inception"
+        
+        XCTAssertTrue(viewModel.movies.isEmpty)
+        connection.simulateConnectionChange(isConnected: true)
+        try? await Task.sleep(for: .milliseconds(200))
+        
+        XCTAssertFalse(viewModel.movies.isEmpty)
+    }
     // MARK: - Helper
 
     private var movies: [Movie] {
