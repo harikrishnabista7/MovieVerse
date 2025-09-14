@@ -86,9 +86,6 @@
         }
       }
     },
-    "No favorites found" : {
-
-    },
     "noDetailFound" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -96,6 +93,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No detail found"
+          }
+        }
+      }
+    },
+    "noFavorites" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No favorites yet"
           }
         }
       }

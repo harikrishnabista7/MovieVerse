@@ -44,7 +44,8 @@ final class MockMovieRepository: MovieRepository {
                 case let .error(error):
                     continuation.finish(throwing: error)
                 default:
-                    assertionFailure("Unsupported scenario for getMovies")
+                    continuation.yield([])
+                    continuation.finish()
                 }
             }
         }

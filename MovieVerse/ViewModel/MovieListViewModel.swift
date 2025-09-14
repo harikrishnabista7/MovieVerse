@@ -125,7 +125,9 @@ final class MovieListViewModel: ObservableObject {
 
     private func loadFavorites() async {
         do {
+            error = nil
             movies = try await movieRepo.favoriteMovies(query: searchText)
+            handleEmptyState()
         } catch {
             handleError(error)
         }
@@ -141,15 +143,17 @@ final class MovieListViewModel: ObservableObject {
     }
 
     private func handleEmptyState() {
+        let connectedMessage: String = selectedMode == .movies ? .noMoviesFound : .noFavorites
         if movies.isEmpty {
-            error = connectionMonitor.isConnected ? .noMoviesFound : .checkInternet
+            error = connectionMonitor.isConnected ? connectedMessage : .checkInternet
         }
     }
 
     private func handleError(_ error: Error) {
         AppLogger.error(error.localizedDescription)
+        let connectedMessage: String = selectedMode == .movies ? .noMoviesFound : .noFavorites
         if movies.isEmpty {
-            self.error = connectionMonitor.isConnected ? .noMoviesFound : .checkInternet
+            self.error = connectionMonitor.isConnected ? connectedMessage : .checkInternet
         }
     }
 

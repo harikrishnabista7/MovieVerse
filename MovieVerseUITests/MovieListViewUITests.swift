@@ -60,12 +60,28 @@ final class MovieListViewUITests: XCTestCase {
         app.launchEnvironment["MOCK_DELAY"] = "1.0"
         app.launch()
 
-        let list = app.collectionViews["movieList"].firstMatch
-        XCTAssertFalse(list.exists)
-
         let rows = app.staticTexts["No movies found"].firstMatch
 
         XCTAssertTrue(rows.exists)
+    }
+    
+    func test_MovieListView_ToggleToFavorite_ShowsFavorites() {
+        app.launchEnvironment["MOCK_SCENARIO"] = "favorites"
+        app.launchEnvironment["MOCK_DELAY"] = "1.0"
+        app.launch()
+
+        let list = app.collectionViews["movieList"].firstMatch
+        XCTAssertTrue(list.waitForExistence(timeout: 2.0))
+
+        let rows0 = list.descendants(matching: .any).matching(identifier: "1").count
+
+        XCTAssertEqual(rows0, 0)
+        
+        app.segmentedControls.buttons["Favorites"].firstMatch.tap()
+        
+        let rows1 = list.descendants(matching: .any).matching(identifier: "1").count
+        
+        XCTAssertEqual(rows1, 1)
     }
 
     func test_MovieListView_NavigateToDetail() {

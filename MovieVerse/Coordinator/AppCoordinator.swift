@@ -42,6 +42,8 @@ final class AppCoordinator: Coordinator {
                     repo = MockMovieRepository(scenario: .error(URLError(.badURL)), excludeCacheSimulation: true, delay: delay)
                 case "success":
                     repo = MockMovieRepository(scenario: .movies([Movie.mock(id: 1)]), excludeCacheSimulation: true, delay: delay)
+                case "favorites":
+                    repo = MockMovieRepository(scenario: .favorites([Movie.mock(id: 1)]), excludeCacheSimulation: true, delay: delay)
                 case "successWithDetail":
                     repo = MockMovieRepository(scenario: .movieWithDetail(.mock(id: 1), .mock(id: 1)), excludeCacheSimulation: true, delay: delay)
                 case "detail":

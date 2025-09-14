@@ -15,48 +15,51 @@ struct MovieListView: View {
     }
 
     var body: some View {
-        Group {
+        List {
+            Picker("", selection: $viewModel.selectedMode) {
+                ForEach(MovieListMode.allCases, id: \.self) { mode in
+                    Text(mode.rawValue).tag(mode)
+                }
+            }
+            .pickerStyle(.segmented)
+            .listRowSeparator(.hidden)
+
             if viewModel.isLoading {
-                ProgressView()
-                    .accessibilityIdentifier("progressView")
+                HStack {
+                    Spacer()
+                    ProgressView()
+                        .accessibilityIdentifier("progressView")
+                    Spacer()
+                }
             } else if viewModel.error != nil {
                 Text(viewModel.error!)
                     .accessibilityIdentifier("errorText")
-            } else {
-                List {
-                    Picker("", selection: $viewModel.selectedMode) {
-                        ForEach(MovieListMode.allCases, id: \.self) { mode in
-                            Text(mode.rawValue).tag(mode)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                    .listRowSeparator(.hidden)
-
-                    if viewModel.movies.isEmpty && viewModel.selectedMode == .favorites {
-                        Text("No favorites found")
-                    } else {
-                        ForEach(viewModel.movies) { movie in
-                            NavigationLink(value: AppCoordinator.AppCoordinatorRoute.movieDetail(movie.id)) {
-                                MovieRowView(movie: movie)
-                            }
-                            .accessibilityIdentifier("\(movie.id)")
-                            .onAppear {
-                                if viewModel.movies.last?.id == movie.id {
-                                    Task {
-                                        await viewModel.fetchMoreMovies()
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                .accessibilityIdentifier("movieList")
             }
+
+            movieRows
         }
+        .accessibilityIdentifier("movieList")
+
         .searchable(text: $viewModel.searchText)
         .navigationTitle(Text(verbatim: .movieVerse))
         .task {
             await viewModel.loadMovies()
+        }
+    }
+
+    private var movieRows: some View {
+        ForEach(viewModel.movies) { movie in
+            NavigationLink(value: AppCoordinator.AppCoordinatorRoute.movieDetail(movie.id)) {
+                MovieRowView(movie: movie)
+            }
+            .accessibilityIdentifier("\(movie.id)")
+            .onAppear {
+                if viewModel.movies.last?.id == movie.id {
+                    Task {
+                        await viewModel.fetchMoreMovies()
+                    }
+                }
+            }
         }
     }
 }
