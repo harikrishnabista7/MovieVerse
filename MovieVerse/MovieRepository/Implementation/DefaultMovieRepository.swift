@@ -14,6 +14,8 @@ struct DefaultMovieRepository: MovieRepository {
         self.cache = cache
     }
 
+    /// Load movies first from cache and then from network
+    /// - Returns: AsyncThrowingStream
     func getMovies() -> AsyncThrowingStream<[Movie], Error> {
         AsyncThrowingStream { continuation in
             // Create a Task for async work
@@ -51,6 +53,9 @@ struct DefaultMovieRepository: MovieRepository {
         }
     }
 
+    /// Search movies with name containing the query
+    /// - Parameter query: search query
+    /// - Returns: movies: An array of `Movie` objects
     func searchMovies(query: String) async throws -> [Movie] {
         do {
             let networkMovies = try await network.searchMovies(query: query)
@@ -63,6 +68,9 @@ struct DefaultMovieRepository: MovieRepository {
         }
     }
 
+    /// Returns movie detail
+    /// - Parameter id: Unique id representing the movie
+    /// - Returns: moviedetail object
     func getMovieDetail(id: Int32) async throws -> MovieDetail {
         do {
             let detail = try await network.getMovieDetail(id: id)
@@ -79,6 +87,11 @@ struct DefaultMovieRepository: MovieRepository {
         }
     }
 
+    /// Load next page of the movies
+    /// - Parameters:
+    ///   - searchQuery: Query to filter the movies title in the list
+    ///   - lastMovieId: Movie id of the last object of the previous page list
+    /// - Returns: movie: list of movies
     func getMoviesPage(searchQuery: String?, after lastMovieId: Int32?) async throws -> [Movie] {
         if NetworkMonitor.shared.isConnected {
             return try await network.getMoviesPage(searchQuery: searchQuery, after: lastMovieId)
@@ -87,18 +100,28 @@ struct DefaultMovieRepository: MovieRepository {
         }
     }
 
+    /// Adds movie to favorite list
+    /// - Parameter movieId: unique id representing the movie
     func addMovieToFavorites(_ movieId: Int32) async throws {
         try await cache.addMovieToFavorites(movieId)
     }
 
+    /// Removes movie from favorite list
+    /// - Parameter movieId: movieId: unique id representing the movie
     func removeMovieFromFavorites(_ movieId: Int32) async throws {
         try await cache.removeMovieFromFavorites(movieId)
     }
 
+    /// Query to check if movie is in favorite list
+    /// - Parameter movieId: unique id representing the movie
+    /// - Returns: Boolean
     func isFavoriteMovie(_ movieId: Int32) async throws -> Bool {
         try await cache.isFavoriteMovie(movieId)
     }
 
+    /// Returns list of favorite movies
+    /// - Parameter query: Query to filter movie names in the list
+    /// - Returns: movies: list of movies
     func favoriteMovies(query: String) async throws -> [Movie] {
         try await cache.favoriteMovies(query: query)
     }
