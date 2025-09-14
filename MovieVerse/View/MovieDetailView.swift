@@ -37,7 +37,7 @@ struct MovieDetailView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
                 // backdroop
-                imageView(url: MovieHelper.absoluteImageURL(size: .w500, path: movieDetail.backdropPath),
+                imageView(url: MovieHelper.absoluteImageURL(size: .w500, path: movieDetail.backdropPath ?? ""),
                           contentMode: .fill,
                           placeholderHeight: 250)
                     .frame(maxHeight: 300)
@@ -58,12 +58,20 @@ struct MovieDetailView: View {
                 VStack(alignment: .leading, spacing: 10) {
                     HStack {
                         Spacer()
-                        Label(MovieHelper.releaseYearStr(movieDetail.releaseDate), systemImage: SystemName.calender)
+                        if !movieDetail.releaseDate.isEmpty {
+                            Label(MovieHelper.releaseYearStr(movieDetail.releaseDate), systemImage: SystemName.calender)
+                        }
+                        
+                        
                         Text("|")
-                        Label("\(movieDetail.runtime) \(String.min)", systemImage: SystemName.clock)
+
+                        if movieDetail.runtime > 0 {
+                            Label("\(movieDetail.runtime) \(String.min)", systemImage: SystemName.clock)
+                        }
+                        
+                        Text("|")
 
                         if !movieDetail.genres.isEmpty {
-                            Text("|")
                             Label(movieDetail.genres[0].name, systemImage: SystemName.tag)
                         }
 
@@ -71,10 +79,12 @@ struct MovieDetailView: View {
                     }
                     .padding(.bottom)
 
-                    Text(verbatim: .aboutMovie)
-                        .bold()
+                    if !movieDetail.overview.isEmpty {
+                        Text(verbatim: .aboutMovie)
+                            .bold()
 
-                    Text(movieDetail.overview)
+                        Text(movieDetail.overview)
+                    }
                 }
                 .padding(.horizontal)
                 .padding(.top, 90)
@@ -111,7 +121,7 @@ struct MovieDetailView: View {
 
     @ViewBuilder
     private func posterImageView(movieDetail: MovieDetail) -> some View {
-        imageView(url: MovieHelper.absoluteImageURL(size: .w200, path: movieDetail.posterPath),
+        imageView(url: MovieHelper.absoluteImageURL(size: .w200, path: movieDetail.posterPath ?? ""),
                   contentMode: .fill, placeholderHeight: 120)
             .frame(width: 95, height: 120)
             .cornerRadius(16)
@@ -126,4 +136,3 @@ struct MovieDetailView: View {
             .padding(.trailing)
     }
 }
-

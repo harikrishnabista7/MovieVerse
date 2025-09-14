@@ -20,9 +20,10 @@ final class MovieListViewModel: ObservableObject {
     private var cancellables: Set<AnyCancellable> = []
 
     private var originalMovies: [Movie] = []
-    private var searchedMovies: [Movie] = []
 
     private var searchTask: Task<Void, Never>?
+
+    private var isFetchingMore: Bool = false
 
     init(repo: MovieRepository, connectionMonitor: any ConnectionMonitor = NetworkMonitor.shared) {
         movieRepo = repo
@@ -33,7 +34,7 @@ final class MovieListViewModel: ObservableObject {
 
     /// Load movies from movie repo asynchronously
     func loadMovies() async {
-        isLoading = true 
+        isLoading = true
         error = nil
         guard searchText.isEmpty else {
             isLoading = false
@@ -53,6 +54,29 @@ final class MovieListViewModel: ObservableObject {
         }
     }
 
+    func fetchMoreMovies() async {
+        guard !isFetchingMore else {
+            return
+        }
+        isFetchingMore = true
+        let lastMovieId = movies.last?.id
+        let searchQuery = searchText.isEmpty ? nil : searchText
+
+        do {
+            let moreMovies = try await movieRepo.getMoviesPage(searchQuery: searchQuery, after: lastMovieId)
+            let existingIds = Set(movies.map { $0.id })
+            let uniqueMovies = moreMovies.filter { !existingIds.contains($0.id) }
+            movies += uniqueMovies
+
+            if searchQuery == nil {
+                originalMovies = movies
+            }
+        } catch {
+            debugPrint(error)
+        }
+        isFetchingMore = false
+    }
+
     /// Search for movies in the movie repo based on the title of the movie
     /// - Parameter query: movie name that contains the query
     private func searchMovies(query: String) {
@@ -64,7 +88,6 @@ final class MovieListViewModel: ObservableObject {
             movies = originalMovies
             isLoading = false
         } else {
-            searchedMovies = []
             movies = []
             searchTask = Task { [weak self] in
                 guard let self else { return }
@@ -75,7 +98,6 @@ final class MovieListViewModel: ObservableObject {
                     }
 
                     let movies = try await self.movieRepo.searchMovies(query: query.trimmingCharacters(in: .whitespacesAndNewlines))
-                    searchedMovies = movies
                     self.movies = movies
 
                 } catch {

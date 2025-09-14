@@ -61,6 +61,10 @@ struct MockMovieRepository: MovieRepository {
             fatalError("Unsupported scenario for searchMovies")
         }
     }
+    
+    func getMoviesPage(searchQuery: String?, after lastMovieId: Int32?) async throws -> [Movie] {
+        []
+    }
 
     func getMovieDetail(id: Int32) async throws -> MovieDetail {
         try? await Task.sleep(for: .milliseconds(UInt64(delay)))

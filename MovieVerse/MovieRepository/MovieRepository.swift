@@ -34,13 +34,21 @@ protocol MovieRepository {
     ///
     /// - Parameter query: The search text (e.g., a title or keyword).
     /// - Returns: An array of `Movie` objects matching the query.
-    /// - Throws: A `MovieRepositoryError` or another error if the search fails.
+    /// - Throws: An error if the search request fails.
     func searchMovies(query: String) async throws -> [Movie]
 
     /// Retrieves detailed information about a specific movie.
     ///
     /// - Parameter id: The unique identifier of the movie.
     /// - Returns: A `MovieDetail` object containing full information about the movie.
-    /// - Throws: A `MovieRepositoryError` or another error if retrieval fails.
+    /// - Throws: An error  if retrieval fails.
     func getMovieDetail(id: Int32) async throws -> MovieDetail
+
+    /// Loads the next page of movies, optionally filtered by a search query.
+    ///
+    /// - Parameters:
+    ///   - searchQuery: Optional search text to filter movies.
+    ///   - after: The ID of the last movie from the previous page (or nil for first page).
+    /// - Returns: A list of movies for the next page.
+    func getMoviesPage(searchQuery: String?, after lastMovieId: Int32?) async throws -> [Movie]
 }

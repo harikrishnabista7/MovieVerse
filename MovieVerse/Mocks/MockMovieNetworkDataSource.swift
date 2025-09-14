@@ -35,6 +35,10 @@ struct MockMovieNetworkDataSource: MovieDataSource {
         }
         throw MockError(errorMessage: "Unexpected scenario for getMovieDetails")
     }
+    
+    func getMoviesPage(searchQuery: String?, after lastMovieId: Int32?) async throws -> [Movie] {
+        []
+    }
 
     private func handleMoviesScenario() throws -> [Movie] {
         switch scenario {

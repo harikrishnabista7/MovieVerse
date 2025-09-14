@@ -12,7 +12,7 @@ struct MovieRowView: View {
 
     var body: some View {
         HStack(alignment: .center, spacing: 15) {
-            AsyncImageView(url: movie.absoluteImageURL(path: movie.posterPath), contentMode: .fill, loadingView: {
+            AsyncImageView(url: movie.absoluteImageURL(path: movie.posterPath ?? ""), contentMode: .fill, loadingView: {
                 Color.gray.opacity(0.2).opacityShimmer()
             }, placeholderView: {
                 Color.gray.opacity(0.2)
@@ -27,10 +27,13 @@ struct MovieRowView: View {
                     .bold()
                     .lineLimit(2)
 
-                HStack {
-                    Image(systemName: "calendar")
-                    Text(movie.releaseYearStr)
+                if !movie.releaseDate.isEmpty {
+                    HStack {
+                        Image(systemName: "calendar")
+                        Text(movie.releaseYearStr)
+                    }
                 }
+             
             }
             .font(.system(size: 15))
         }

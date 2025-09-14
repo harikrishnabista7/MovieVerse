@@ -34,4 +34,12 @@ protocol MovieDataSource {
     /// - Returns: A `MovieDetail` object containing extended movie information.
     /// - Throws: An error if the movie details could not be retrieved.
     func getMovieDetail(id: Int32) async throws -> MovieDetail
+
+    /// Loads the next page of movies, optionally filtered by a search query.
+    ///
+    /// - Parameters:
+    ///   - searchQuery: Optional search text to filter movies.
+    ///   - after: The ID of the last movie from the previous page (or nil for first page).
+    /// - Returns: A list of movies for the next page.
+    func getMoviesPage(searchQuery: String?, after lastMovieId: Int32?) async throws -> [Movie]
 }

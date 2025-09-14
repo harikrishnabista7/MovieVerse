@@ -79,6 +79,14 @@ struct DefaultMovieRepository: MovieRepository {
         }
     }
 
+    func getMoviesPage(searchQuery: String?, after lastMovieId: Int32?) async throws -> [Movie] {
+        if NetworkMonitor.shared.isConnected {
+            return try await network.getMoviesPage(searchQuery: searchQuery, after: lastMovieId)
+        } else {
+            return try await cache.getMoviesPage(searchQuery: searchQuery, after: lastMovieId)
+        }
+    }
+
     private func saveToCache(_ movies: [Movie]) async {
         do {
             try await cache.saveMovies(movies)

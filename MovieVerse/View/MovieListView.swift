@@ -29,7 +29,21 @@ struct MovieListView: View {
                             MovieRowView(movie: movie)
                         }
                         .accessibilityIdentifier("\(movie.id)")
+                        .onAppear {
+                            if viewModel.movies.last?.id == movie.id {
+                                Task {
+                                    await viewModel.fetchMoreMovies()
+                                }
+                            }
+                        }
                     }
+//                    if !viewModel.movies.isEmpty {
+//                        Color.clear
+//                            .frame(height: 10)
+//                            .onAppear {
+//                                print("Fetch more")
+//                            }
+//                    }
                 }
                 .accessibilityIdentifier("movieList")
             }

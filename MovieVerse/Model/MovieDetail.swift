@@ -9,8 +9,8 @@ struct MovieDetail: Decodable, Equatable, Identifiable {
     let title: String
     let id: Int32
     let releaseDate: String
-    let posterPath: String
-    let backdropPath: String
+    let posterPath: String?
+    let backdropPath: String?
     let rating: Double
     let runtime: Int16
     let overview: String

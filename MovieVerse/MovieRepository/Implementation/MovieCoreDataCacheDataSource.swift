@@ -13,23 +13,21 @@ struct MovieCoreDataCacheDataSource: MovieCacheDataSource {
         self.controller = controller
     }
 
-    @MainActor
     func getMovies() async throws -> [Movie] {
         let fetchRequest = DBMovie.fetchRequest()
         fetchRequest.fetchLimit = 20
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "popularity", ascending: false)]
-        let dMovies = try controller.viewContext.fetch(fetchRequest)
+        let dMovies = try await controller.viewContext.fetch(fetchRequest)
         return dMovies.map { $0.toMovie() }
     }
 
-    @MainActor
     func searchMovies(query: String) async throws -> [Movie] {
         let fetchRequest = DBMovie.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "title CONTAINS[cd] %@", query)
         fetchRequest.fetchLimit = 20
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "popularity", ascending: false)]
 
-        let dMovies = try controller.viewContext.fetch(fetchRequest)
+        let dMovies = try await controller.viewContext.fetch(fetchRequest)
         return dMovies.map { $0.toMovie() }
     }
 
@@ -47,6 +45,26 @@ struct MovieCoreDataCacheDataSource: MovieCacheDataSource {
         } catch {
             throw AppError.notFound
         }
+    }
+
+    func getMoviesPage(searchQuery: String?, after lastMovieId: Int32?) async throws -> [Movie] {
+        let fetchRequest = DBMovie.fetchRequest()
+
+        var predicates: [NSPredicate] = []
+
+        if let searchQuery {
+            predicates.append(NSPredicate(format: "title CONTAINS[cd] %@", searchQuery))
+        }
+
+        if let lastMovieId, let lastMovie = try await getMovie(id: lastMovieId) {
+            predicates.append(NSPredicate(format: "popularity < %f", lastMovie.popularity))
+        }
+
+        fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+        fetchRequest.fetchLimit = 20
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "popularity", ascending: false)]
+        let dMovies = try await controller.viewContext.fetch(fetchRequest)
+        return dMovies.map { $0.toMovie() }
     }
 
     func saveMovies(_ movies: [Movie]) async throws {
@@ -69,6 +87,12 @@ struct MovieCoreDataCacheDataSource: MovieCacheDataSource {
             dbDetail.initWith(detail)
             try context.save()
         }
+    }
+
+    private func getMovie(id: Int32) async throws -> DBMovie? {
+        let fetchRequest: NSFetchRequest<DBMovie> = DBMovie.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %d", id)
+        return try await controller.viewContext.fetch(fetchRequest).first
     }
 
     private func getSavingContext() -> NSManagedObjectContext {

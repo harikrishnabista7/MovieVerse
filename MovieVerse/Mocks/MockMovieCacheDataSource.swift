@@ -5,8 +5,6 @@
 //  Created by hari krishna on 14/09/2025.
 //
 
-
-
 final class MockMovieCacheDataSource: MovieCacheDataSource {
     let scenario: MovieMockScenario
 
@@ -31,6 +29,10 @@ final class MockMovieCacheDataSource: MovieCacheDataSource {
             return detail
         }
         throw MockError(errorMessage: "Unexpected scenario for getMovieDetails")
+    }
+    
+    func getMoviesPage(searchQuery: String?, after lastMovieId: Int32?) async throws -> [Movie] {
+        []
     }
 
     private func handleMoviesScenario() throws -> [Movie] {
