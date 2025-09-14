@@ -6,22 +6,9 @@
 //
 import Foundation
 
-struct Pagination: Decodable {
-    let page: Int
-    let totalPages: Int
-
-    enum CodingKeys: String, CodingKey {
-        case page
-        case totalPages = "total_pages"
-    }
-}
-
 final class MovieNetworkDataSource: MovieDataSource {
-  
-    
     let client: NetworkClient
     let requestMaker: NetworkRequestMaker
-    //   let loadPagination:
     private var moviesPagination: Pagination?
     private var searchPagination: Pagination?
 
@@ -74,12 +61,12 @@ final class MovieNetworkDataSource: MovieDataSource {
         let movies = try response.decode(type: [Movie].self, dictionaryKey: "results")
         return movies
     }
-    
+
     func addMovieToFavorites(_ movieId: Int32) async throws {
         // Not implemented
         throw AppError.notFound
     }
-    
+
     func removeMovieFromFavorites(_ movieId: Int32) async throws {
         // Not implemented
         throw AppError.notFound

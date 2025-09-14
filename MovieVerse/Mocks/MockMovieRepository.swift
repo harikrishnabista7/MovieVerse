@@ -59,7 +59,7 @@ final class MockMovieRepository: MovieRepository {
         case let .error(error):
             throw error
         default:
-            fatalError("Unsupported scenario for searchMovies")
+            return []
         }
     }
     
@@ -70,7 +70,7 @@ final class MockMovieRepository: MovieRepository {
         case let .error(error):
             throw error
         default:
-            fatalError("Unsupported scenario for searchMovies")
+            return []
         }
     }
     

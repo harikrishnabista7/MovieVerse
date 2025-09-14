@@ -13,7 +13,7 @@ final class MovieDetailViewModelTests: XCTestCase {
     func test_VM_GetMovieDetail_ShowsDetails() async {
         let repo = MockMovieRepository(scenario: .detail(.mock(id: 1)))
         let viewModel = MovieDetailViewModel(movieId: 1, movieRepo: repo)
-        
+
         XCTAssertNil(viewModel.detail)
         await viewModel.getMovieDetail()
         XCTAssertEqual(viewModel.detail?.id, 1)
@@ -53,10 +53,41 @@ final class MovieDetailViewModelTests: XCTestCase {
 
         XCTAssertNil(viewModel.detail)
         XCTAssertNil(viewModel.error)
-        
+
         connection.simulateConnectionChange(isConnected: true)
         try? await Task.sleep(for: .milliseconds(100))
-        
+
         XCTAssertEqual(viewModel.detail?.id, 1)
+    }
+
+    @MainActor
+    func test_VM_AddToFavorite_SavesToFavorites() async {
+        let repo = MockMovieRepository(scenario: .detail(.mock(id: 1)))
+        let viewModel = MovieDetailViewModel(movieId: 1, movieRepo: repo)
+
+        await viewModel.getMovieDetail()
+
+        XCTAssertFalse(viewModel.isFavorite)
+        viewModel.toggleFavorite()
+
+        try? await Task.sleep(for: .milliseconds(100))
+
+        XCTAssertTrue(viewModel.isFavorite)
+    }
+
+    @MainActor
+    func test_VM_RemoveFromFavorite_ToggleFavoriteToFalse() async {
+        let repo = MockMovieRepository(scenario: .detail(.mock(id: 1)))
+        let viewModel = MovieDetailViewModel(movieId: 1, movieRepo: repo)
+
+        await viewModel.getMovieDetail()
+        viewModel.isFavorite = true // simulate isFavorite true
+
+        XCTAssertTrue(viewModel.isFavorite)
+        viewModel.toggleFavorite()
+
+        try? await Task.sleep(for: .milliseconds(100))
+
+        XCTAssertFalse(viewModel.isFavorite)
     }
 }
