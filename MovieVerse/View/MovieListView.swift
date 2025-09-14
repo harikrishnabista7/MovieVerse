@@ -14,6 +14,13 @@ struct MovieListView: View {
         _viewModel = StateObject(wrappedValue: MovieListViewModel(repo: repo))
     }
 
+    enum MovieListMode: String, CaseIterable {
+        case movies = "Movies"
+        case favorites = "Favorites"
+    }
+
+    @State private var selectedMode: MovieListMode = .movies
+
     var body: some View {
         Group {
             if viewModel.isLoading {
@@ -24,6 +31,14 @@ struct MovieListView: View {
                     .accessibilityIdentifier("errorText")
             } else {
                 List {
+                    Picker("Movie List", selection: $selectedMode) {
+                        ForEach(MovieListMode.allCases, id: \.self) { mode in
+                            Text(mode.rawValue).tag(mode)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .listRowSeparator(.hidden)
+
                     ForEach(viewModel.movies) { movie in
                         NavigationLink(value: AppCoordinator.AppCoordinatorRoute.movieDetail(movie.id)) {
                             MovieRowView(movie: movie)

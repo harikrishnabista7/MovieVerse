@@ -50,6 +50,9 @@
         }
       }
     },
+    "Movie List" : {
+
+    },
     "movieVerse" : {
       "extractionState" : "manual",
       "localizations" : {
