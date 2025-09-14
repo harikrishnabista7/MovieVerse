@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F1210E9F2E7750BF00363201 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F1210E9E2E7750BF00363201 /* README.md */; };
 		F14E82FB2E74B4F900F43774 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = F14E82FA2E74B4F900F43774 /* Kingfisher */; };
 /* End PBXBuildFile section */
 
@@ -28,6 +29,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		F1210E9E2E7750BF00363201 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		F12ACF792E71B6EC006EA2AB /* MovieVerse.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MovieVerse.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F12ACF862E71B6ED006EA2AB /* MovieVerseTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MovieVerseTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F12ACF902E71B6ED006EA2AB /* MovieVerseUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MovieVerseUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -93,6 +95,7 @@
 		F12ACF702E71B6EC006EA2AB = {
 			isa = PBXGroup;
 			children = (
+				F1210E9E2E7750BF00363201 /* README.md */,
 				F12ACF7B2E71B6EC006EA2AB /* MovieVerse */,
 				F12ACF892E71B6ED006EA2AB /* MovieVerseTests */,
 				F12ACF932E71B6ED006EA2AB /* MovieVerseUITests */,
@@ -234,6 +237,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F1210E9F2E7750BF00363201 /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
