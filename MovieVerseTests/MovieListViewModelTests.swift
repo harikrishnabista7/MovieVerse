@@ -84,23 +84,23 @@ final class MovieListViewModelTests: XCTestCase {
 
         XCTAssertEqual(viewModel.error, String.checkInternet)
     }
-    
+
     @MainActor
     func test_VM_NetworkWhenOnlineAndListEmpty_FetchesMovies() async {
         let connection = MockNetworkMonitor()
         connection.simulateConnectionChange(isConnected: false)
-        
+
         let repo = MockMovieRepository(scenario: .movies([
             Movie.mock(id: 1, title: "Shuttle Island"),
             Movie.mock(id: 2, title: "Inception"),
         ]))
-        
+
         let viewModel = MovieListViewModel(repo: repo, connectionMonitor: connection)
-        
+
         XCTAssertTrue(viewModel.movies.isEmpty)
         connection.simulateConnectionChange(isConnected: true)
         try? await Task.sleep(for: .milliseconds(300))
-        
+
         XCTAssertFalse(viewModel.movies.isEmpty)
     }
 
@@ -108,21 +108,35 @@ final class MovieListViewModelTests: XCTestCase {
     func test_VM_NetworkWhenOnlineAndListEmpty_SearchesMovies() async {
         let connection = MockNetworkMonitor()
         connection.simulateConnectionChange(isConnected: false)
-        
+
         let repo = MockMovieRepository(scenario: .movies([
             Movie.mock(id: 1, title: "Shuttle Island"),
             Movie.mock(id: 2, title: "Inception"),
         ]))
-        
+
         let viewModel = MovieListViewModel(repo: repo, connectionMonitor: connection)
         viewModel.searchText = "Inception"
-        
+
         XCTAssertTrue(viewModel.movies.isEmpty)
         connection.simulateConnectionChange(isConnected: true)
         try? await Task.sleep(for: .milliseconds(300))
-        
+
         XCTAssertFalse(viewModel.movies.isEmpty)
     }
+
+    @MainActor
+    func test_VM_SelectionModeWhenSetToFavorite_ShowsFavoritesOnly() async {
+        let viewModel = makeSut(scenario: .favorites(movies))
+
+        XCTAssertTrue(viewModel.movies.isEmpty)
+
+        viewModel.selectedMode = .favorites
+
+        try? await Task.sleep(for: .milliseconds(100))
+
+        XCTAssertEqual(viewModel.movies.count, 1)
+    }
+
     // MARK: - Helper
 
     private var movies: [Movie] {

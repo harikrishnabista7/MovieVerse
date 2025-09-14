@@ -32,4 +32,9 @@ protocol MovieCacheDataSource: MovieDataSource {
     /// - Parameter movieId: id: The unique identifier of the movie.
     /// - Returns: Bool, true for isFavorite otherwise false
     func isFavoriteMovie(_ movieId: Int32) async throws -> Bool
+    
+    
+    /// Returns favorite movies from cache
+    /// - Returns: movies: An array of `Movie` objects 
+    func favoriteMovies(query: String) async throws -> [Movie]
 }

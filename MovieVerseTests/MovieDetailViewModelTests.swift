@@ -81,7 +81,9 @@ final class MovieDetailViewModelTests: XCTestCase {
         let viewModel = MovieDetailViewModel(movieId: 1, movieRepo: repo)
 
         await viewModel.getMovieDetail()
-        viewModel.isFavorite = true // simulate isFavorite true
+        viewModel.toggleFavorite()
+
+        try? await Task.sleep(for: .milliseconds(100))
 
         XCTAssertTrue(viewModel.isFavorite)
         viewModel.toggleFavorite()

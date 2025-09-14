@@ -86,6 +86,16 @@ final class MockMovieRepository: MovieRepository {
         favoriteMovies.contains(movieId)
     }
 
+    func favoriteMovies(query: String) async throws -> [Movie] {
+        switch scenario {
+        case let .movies(movies), let .favorites(movies):
+            return movies
+        case let .error(error):
+            throw error
+        default:
+            return []
+        }
+    }
 
     func getMovieDetail(id: Int32) async throws -> MovieDetail {
         try? await Task.sleep(for: .milliseconds(UInt64(delay)))

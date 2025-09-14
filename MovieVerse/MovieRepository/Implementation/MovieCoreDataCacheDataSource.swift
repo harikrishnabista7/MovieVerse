@@ -121,6 +121,20 @@ struct MovieCoreDataCacheDataSource: MovieCacheDataSource {
         }
     }
 
+    func favoriteMovies(query: String) async throws -> [Movie] {
+        let fetchRequest: NSFetchRequest<DBMovie> = DBMovie.fetchRequest()
+        var predicates: [NSPredicate] = [NSPredicate(format: "isFavorite == %d", 1)]
+        
+        if !query.isEmpty {
+            let predicate1 = NSPredicate(format: "title CONTAINS[cd] %@", query)
+            predicates.append(predicate1)
+        }
+        fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "popularity", ascending: false)]
+        return try await controller.viewContext.fetch(fetchRequest).map { $0.toMovie() }
+    }
+
     private func getMovie(id: Int32) async throws -> DBMovie? {
         let fetchRequest: NSFetchRequest<DBMovie> = DBMovie.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "id == %d", id)

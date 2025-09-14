@@ -31,15 +31,15 @@ final class MockMovieCacheDataSource: MovieCacheDataSource {
         }
         throw MockError(errorMessage: "Unexpected scenario for getMovieDetails")
     }
-    
+
     func getMoviesPage(searchQuery: String?, after lastMovieId: Int32?) async throws -> [Movie] {
         return try handleMoviesScenario()
     }
-    
+
     func addMovieToFavorites(_ movieId: Int32) async throws {
         favoriteMovies.insert(movieId)
     }
-    
+
     func removeMovieFromFavorites(_ movieId: Int32) async throws {
         favoriteMovies.remove(movieId)
     }
@@ -48,9 +48,13 @@ final class MockMovieCacheDataSource: MovieCacheDataSource {
         favoriteMovies.contains(movieId)
     }
 
+    func favoriteMovies(query: String) async throws -> [Movie] {
+        try handleMoviesScenario()
+    }
+
     private func handleMoviesScenario() throws -> [Movie] {
         switch scenario {
-        case let .movies(movies):
+        case let .movies(movies), let .favorites(movies):
             return movies
         case let .error(error):
             throw error

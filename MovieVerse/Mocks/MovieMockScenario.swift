@@ -9,5 +9,6 @@ enum MovieMockScenario {
     case movies([Movie])
     case error(Error)
     case detail(MovieDetail)
+    case favorites([Movie])
     case movieWithDetail(Movie, MovieDetail)
 }

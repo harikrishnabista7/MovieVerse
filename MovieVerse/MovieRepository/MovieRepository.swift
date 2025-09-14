@@ -63,4 +63,8 @@ protocol MovieRepository {
     /// - Returns: Bool, true for isFavorite otherwise false
     func isFavoriteMovie(_ movieId: Int32) async throws -> Bool
     
+    /// Returns favorite movies from list
+    /// - Returns: movies: An array of `Movie` objects
+    func favoriteMovies(query: String) async throws -> [Movie]
+    
 }
