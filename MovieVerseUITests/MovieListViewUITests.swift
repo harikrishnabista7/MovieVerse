@@ -48,7 +48,7 @@ final class MovieListViewUITests: XCTestCase {
         XCTAssertTrue(progressView.waitForNonExistence(timeout: 2.0))
 
         let list = app.collectionViews["movieList"].firstMatch
-        XCTAssertTrue(list.exists)
+        XCTAssertTrue(list.waitForExistence(timeout: 1.0))
 
         let rows = list.descendants(matching: .any).matching(identifier: "1").count
 
@@ -86,6 +86,6 @@ final class MovieListViewUITests: XCTestCase {
         let rows = list.descendants(matching: .any).matching(identifier: "1")
 
         rows.firstMatch.tap()
-        XCTAssertTrue(app.staticTexts["About Movie"].firstMatch.exists)
+        XCTAssertTrue(app.staticTexts["About Movie"].firstMatch.waitForExistence(timeout: 1.0))
     }
 }

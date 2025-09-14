@@ -37,13 +37,6 @@ struct MovieListView: View {
                             }
                         }
                     }
-//                    if !viewModel.movies.isEmpty {
-//                        Color.clear
-//                            .frame(height: 10)
-//                            .onAppear {
-//                                print("Fetch more")
-//                            }
-//                    }
                 }
                 .accessibilityIdentifier("movieList")
             }
