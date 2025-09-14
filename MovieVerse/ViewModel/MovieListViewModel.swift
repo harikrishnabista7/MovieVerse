@@ -30,18 +30,17 @@ final class MovieListViewModel: ObservableObject {
         observeTextChanged()
         observeNetworkChange()
     }
-    
+
     /// Load movies from movie repo asynchronously
     func loadMovies() async {
+        isLoading = true 
+        error = nil
         guard searchText.isEmpty else {
+            isLoading = false
             return
         }
-
-        isLoading = movies.isEmpty
-        error = nil
-
         do {
-            for try await batch in movieRepo.getMovies() { // show latest stream
+            for try await batch in movieRepo.getMovies() {
                 movies = batch
                 originalMovies = batch
             }
@@ -53,7 +52,7 @@ final class MovieListViewModel: ObservableObject {
             error = connectionMonitor.isConnected ? .noMoviesFound : .checkInternet
         }
     }
-    
+
     /// Search for movies in the movie repo based on the title of the movie
     /// - Parameter query: movie name that contains the query
     private func searchMovies(query: String) {
@@ -89,7 +88,7 @@ final class MovieListViewModel: ObservableObject {
             }
         }
     }
-    
+
     /// Observes the changes to search text and search the movie repo for movie with name containing search text
     private func observeTextChanged() {
         $searchText

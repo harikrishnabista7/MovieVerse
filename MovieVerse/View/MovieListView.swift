@@ -18,16 +18,20 @@ struct MovieListView: View {
         Group {
             if viewModel.isLoading {
                 ProgressView()
+                    .accessibilityIdentifier("progressView")
             } else if viewModel.error != nil {
                 Text(viewModel.error!)
+                    .accessibilityIdentifier("errorText")
             } else {
                 List {
                     ForEach(viewModel.movies) { movie in
                         NavigationLink(value: AppCoordinator.AppCoordinatorRoute.movieDetail(movie.id)) {
                             MovieRowView(movie: movie)
                         }
+                        .accessibilityIdentifier("\(movie.id)")
                     }
                 }
+                .accessibilityIdentifier("movieList")
             }
         }
         .searchable(text: $viewModel.searchText)
