@@ -26,6 +26,7 @@ final class MovieDetailViewModel: ObservableObject {
         observeNetworkChange()
     }
 
+    /// Loads movie detail from movie repo
     func getMovieDetail() async {
         isLoading = true
 
@@ -39,8 +40,10 @@ final class MovieDetailViewModel: ObservableObject {
         }
     }
 
+    /// Observes the network change and when internet available it loads details automatically if not loaded yet.
     private func observeNetworkChange() {
         connectionMonitor.isConnectedPublisher
+            .dropFirst(2) // Skip initial ConnectionMonitor emissions to prevent immediate API calls
             .drop(while: { [weak self] _ in
                 self?.detail != nil
             })

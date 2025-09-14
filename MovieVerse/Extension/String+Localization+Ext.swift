@@ -13,4 +13,5 @@ extension String {
     static let movieVerse = String(localized: "movieVerse")
     static let noDetailFound = String(localized: "noDetailFound")
     static let checkInternet = String(localized: "checkInternet")
+    static let noMoviesFound = String(localized: "noMoviesFound")
 }

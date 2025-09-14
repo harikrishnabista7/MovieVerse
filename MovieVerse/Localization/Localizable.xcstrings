@@ -71,6 +71,17 @@
           }
         }
       }
+    },
+    "noMoviesFound" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No movies found"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

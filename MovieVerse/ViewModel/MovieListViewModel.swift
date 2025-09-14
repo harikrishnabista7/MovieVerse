@@ -16,6 +16,7 @@ final class MovieListViewModel: ObservableObject {
     @Published var isLoading: Bool = false
 
     private let movieRepo: MovieRepository
+    private let connectionMonitor: any ConnectionMonitor
     private var cancellables: Set<AnyCancellable> = []
 
     private var originalMovies: [Movie] = []
@@ -23,16 +24,19 @@ final class MovieListViewModel: ObservableObject {
 
     private var searchTask: Task<Void, Never>?
 
-    init(repo: MovieRepository) {
+    init(repo: MovieRepository, connectionMonitor: any ConnectionMonitor = NetworkMonitor.shared) {
         movieRepo = repo
+        self.connectionMonitor = connectionMonitor
         observeTextChanged()
+        observeNetworkChange()
     }
-
+    
+    /// Load movies from movie repo asynchronously
     func loadMovies() async {
         guard searchText.isEmpty else {
             return
         }
-        
+
         isLoading = movies.isEmpty
         error = nil
 
@@ -46,10 +50,12 @@ final class MovieListViewModel: ObservableObject {
         }
         isLoading = false
         if movies.isEmpty {
-            error = NetworkMonitor.shared.isConnected ? "No movies found" : "Please check your internet connection"
+            error = connectionMonitor.isConnected ? .noMoviesFound : .checkInternet
         }
     }
-
+    
+    /// Search for movies in the movie repo based on the title of the movie
+    /// - Parameter query: movie name that contains the query
     private func searchMovies(query: String) {
         error = nil
         isLoading = movies.isEmpty
@@ -59,6 +65,8 @@ final class MovieListViewModel: ObservableObject {
             movies = originalMovies
             isLoading = false
         } else {
+            searchedMovies = []
+            movies = []
             searchTask = Task { [weak self] in
                 guard let self else { return }
                 do {
@@ -76,17 +84,46 @@ final class MovieListViewModel: ObservableObject {
                 }
                 isLoading = false
                 if movies.isEmpty {
-                    error = NetworkMonitor.shared.isConnected ? "No movies found" : "Please check your internet connection"
+                    error = connectionMonitor.isConnected ? .noMoviesFound : .checkInternet
                 }
             }
         }
     }
-
+    
+    /// Observes the changes to search text and search the movie repo for movie with name containing search text
     private func observeTextChanged() {
         $searchText
+            .dropFirst()
             .debounce(for: .milliseconds(200), scheduler: RunLoop.main)
             .sink { [weak self] query in
                 self?.searchMovies(query: query)
+            }
+            .store(in: &cancellables)
+    }
+
+    /// Observes the network change and when internet available it loads details automatically if not loaded yet.
+    private func observeNetworkChange() {
+        connectionMonitor.isConnectedPublisher
+            .dropFirst(2) // Skip initial ConnectionMonitor emissions to prevent immediate API calls
+            .drop(while: { [weak self] _ in
+                self?.movies.isEmpty == false
+            })
+            .receive(on: RunLoop.main)
+            .sink { [weak self] isConnected in
+                guard let self else { return }
+                if isConnected {
+                    if self.searchText.isEmpty {
+                        Task {
+                            await self.loadMovies()
+                        }
+                    } else {
+                        self.searchMovies(query: self.searchText)
+                    }
+                } else {
+                    if self.movies.isEmpty {
+                        self.error = .checkInternet
+                    }
+                }
             }
             .store(in: &cancellables)
     }
